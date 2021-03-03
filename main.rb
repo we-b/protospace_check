@@ -39,7 +39,7 @@ def sign_up_without_profile
   end
 
   @d.find_element(:link_text, "新規登録").click
-  @wait.until { /ユーザー新規登録/ .match(@d.page_source) rescue false}
+  @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
 
   # ユーザー新規登録画面でのエラーハンドリングログを取得
   check_19_1
@@ -92,12 +92,11 @@ def clear_sign_up_method
 end
 
 
-
 # まだ登録が完了していない場合、再度登録
 def sign_up_retry
-  @wait.until { /ユーザー新規登録/ .match(@d.page_source) rescue false}
+  @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
 
-  if /ユーザー新規登録/ .match(@d.page_source)
+  if /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][1] = "[1-001] ◯"  #：必須項目が一つでも欠けている場合は、ユーザー登録ができない"
   elsif @d.find_element(:class, "card__wrapper").displayed?
     @puts_num_array[1][2] = "[1-002] ×：プロフィール未入力でも登録できてしまう。またはトップページに遷移してしまう"  #:プロフィールが必須であること"
@@ -111,7 +110,7 @@ def sign_up_retry
     end
 
     @d.find_element(:link_text, "新規登録").click
-    @wait.until { /ユーザー新規登録/ .match(@d.page_source) rescue false}
+    @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
 
     # 登録できてしまったアカウントと異なる情報に更新しておく = 再登録&再ログインできなくなってしまうため
     randm_word = SecureRandom.hex(5)
@@ -123,7 +122,7 @@ def sign_up_retry
   end
 
   # 再度登録
-  # まず新規登録フォームの入力項目をクリア
+  # 最初に新規登録フォームの入力項目をクリア
   clear_sign_up_method
 
   # 今度はprofile含めた全項目に情報を入力していく
@@ -146,8 +145,7 @@ def sign_up_retry
     @puts_num_array[1][11] = "[1-011] ◯"  #:必須項目に適切な値を入力すると、ユーザーの新規登録ができる
 
   # 登録に失敗した場合はパスワードを疑う
-  elsif /ユーザー新規登録/ .match(@d.page_source)
-    @puts_num_array[0].push("×：ユーザー新規登録時にパスワードに大文字が入っていないと登録できない可能性あり、パスワード文字列に大文字(aaa111 → Aaa111)を追加して再登録トライ")
+  elsif /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][11] = "[1-011] ×：必須項目を入力してもユーザー登録ができない"
     @puts_num_array[0].push("ユーザー登録バリデーションが複雑なためユーザー登録ができません。ユーザー登録できない場合、以降の自動チェックにて不備が発生するため自動チェック処理を終了します")
     @puts_num_array[0].push("手動でのアプリチェックを行ってください")

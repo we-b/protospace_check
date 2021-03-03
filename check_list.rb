@@ -1,6 +1,6 @@
 # ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在すること
 def check_1
-  check_detail = {"チェック番号"=> 1 , "チェック合否"=> "" , "チェック内容"=> "ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在すること" , "チェック詳細"=> ""}
+  check_detail = {"チェック番号"=> 1, "チェック合否"=> "", "チェック内容"=> "ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在すること", "チェック詳細"=> ""}
   check_flag = 0
 
   begin
@@ -27,13 +27,13 @@ end
 
 # ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていること
 def check_2
-  check_detail = {"チェック番号"=> 2 , "チェック合否"=> "" , "チェック内容"=> "ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていること" , "チェック詳細"=> ""}
+  check_detail = {"チェック番号"=> 2, "チェック合否"=> "", "チェック内容"=> "ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていること", "チェック詳細"=> ""}
   check_flag = 0
 
   begin
-    display_flag = /#{@user_name}/ .match(@d.page_source) rescue false
+    display_flag = /こんにちは/.match(@d.page_source) && @d.find_element(:link_text, "#{@user_name}さん").displayed? rescue false
     if display_flag
-      check_ele1 = /#{@user_name}/ .match(@d.page_source) ? "○：ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されている\n" : "×：ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていない\n"
+      check_ele1 = @d.find_element(:link_text, "#{@user_name}さん").displayed? ? "○：ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されている\n" : "×：ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていない\n"
       check_detail["チェック詳細"] << check_ele1
       check_flag += 1
     end
@@ -51,10 +51,10 @@ def check_19_1
 
   #全項目未入力で「登録する」ボタンをクリック
   @d.find_element(:class, "form__btn").click
-  @wait.until { /ユーザー新規登録/ .match(@d.page_source) rescue false}
+  @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
 
   #念の為登録できてしまわないかチェック
-  if /ユーザー新規登録/ .match(@d.page_source)
+  if /ユーザー新規登録/.match(@d.page_source)
     @error_log_hash["新規登録"] = "◯：【ユーザー新規登録画面】にて全項目未入力の状態で登録ボタンを押すと、登録が完了せずエラーメッセージが出力される\n\n"
     @error_log_hash["新規登録"] << "↓↓↓ エラーログ全文(出力された内容) ↓↓↓\n"
   else
