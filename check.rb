@@ -8,30 +8,36 @@ require 'securerandom'
 #テスト登録用emailのランダム文字列
 randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
 
-#ユーザー情報
+# ユーザー情報
 @user_email = "user_#{randm_word}@co.jp"
 @user_name = "テストユーザー"
 @user_profile = "aaa"
 @user_occupation = "bbb"
 @user_position = "ccc"
 
-#パスワードは全ユーザー共通
+# パスワードは全ユーザー共通
 @password = "aaa111"
+
+# Prototype投稿情報
+@prototype_title = "桜"
+@prototype_catch_copy = "自然の息吹"
+@prototype_concept = "自然と感情"
+@prototype_image = "/Users/mizutaryousuke/projects/protospace_check/sakura.jpeg"
 
 @d = Selenium::WebDriver.for :chrome
 @wait = Selenium::WebDriver::Wait.new(:timeout => 180000)
 
-#チェック項目の結果や詳細を保存する配列
-#チェック項目の内容はハッシュ
-#{チェック番号： 3 , チェック合否： "〇" , チェック内容： "〇〇をチェック" , チェック詳細： "○○×"}
+# チェック項目の結果や詳細を保存する配列
+# チェック項目の内容はハッシュ
+# {チェック番号： 3 , チェック合否： "〇" , チェック内容： "〇〇をチェック" , チェック詳細： "○○×"}
 @check_log = []
 
-#ユーザー新規登録画面,出品画面,購入画面で表示されるエラーログを保存しておくハッシュ
+# ユーザー新規登録画面,出品画面,購入画面で表示されるエラーログを保存するハッシュ
 @error_log_hash = {}
 
-#出力文章(メインチェック番号) = [1-001]等のチェック
-#@puts_num_array = []
-#[[30配列], [], [], .....]
+# 出力文章(メインチェック番号) = [1-001]等のチェック
+# @puts_num_array = []
+# [[30配列], [], [], .....]
 @puts_num_array = Array.new(9).map{Array.new(30, false)}
 
 #各チェックのフラグ変数
