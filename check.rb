@@ -22,6 +22,7 @@ randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
 @prototype_title = "桜"
 @prototype_catch_copy = "自然の息吹"
 @prototype_concept = "自然と感情"
+@prototype_image_name = "sakura.jpeg"
 @prototype_image = "/Users/mizutaryousuke/projects/protospace_check/sakura.jpeg"
 
 @d = Selenium::WebDriver.for :chrome

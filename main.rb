@@ -29,6 +29,9 @@ def main
   # ProtoType投稿
   create_prototype
 
+  # プロトタイプ詳細表示機能のチェック
+  check_top_prototype_display
+
 end
 
 
@@ -60,7 +63,7 @@ end
 
 # 新規登録に必要な項目入力を行うメソッド
 def input_sign_up(email, pass, name, profile, occupation, position)
-  @wait.until {@d.find_element(:id, 'user_email').displayed?}s
+  @wait.until {@d.find_element(:id, 'user_email').displayed?}
   @d.find_element(:id, 'user_email').send_keys(email)
   @wait.until {@d.find_element(:id, 'user_password').displayed?}
   @d.find_element(:id, 'user_password').send_keys(pass)
@@ -68,7 +71,7 @@ def input_sign_up(email, pass, name, profile, occupation, position)
   @d.find_element(:id, 'user_password_confirmation').send_keys(pass)
   @wait.until {@d.find_element(:id, 'user_name').displayed?}
   @d.find_element(:id, 'user_name').send_keys(name)
-  @wait.until {@d.find_element(:id, 'user_profile').displayed?}s
+  @wait.until {@d.find_element(:id, 'user_profile').displayed?}
   @d.find_element(:id, 'user_profile').send_keys(profile)
   @wait.until {@d.find_element(:id, 'user_occupation').displayed?}
   @d.find_element(:id, 'user_occupation').send_keys(occupation)
@@ -270,7 +273,7 @@ def input_prototype(title, catch_copy, concept, image)
 end
 
 
-# Prototypeを再投稿するため、入力項目を全クリア
+ # Prototype投稿時の必須項目を全クリアにするメソッド
 def clear_prototype
   @wait.until {@d.find_element(:id,"prototype_title").displayed?}
   @d.find_element(:id,"prototype_title").clear
@@ -280,4 +283,20 @@ def clear_prototype
   @d.find_element(:id,"prototype_concept").clear
   @wait.until {@d.find_element(:id,"prototype_image").displayed?}
   @d.find_element(:id,"prototype_image").clear
+end
+
+
+# ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧可能か確認
+def check_top_prototype_display
+  if @d.find_element(:class, "card").displayed?
+    @puts_num_array[3][1] = "[3-001] ◯"  #：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること
+  else
+    @puts_num_array[3][1] = "[3-001] ×：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できない"
+  end
+
+  # プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること
+  check_4
+
+  # ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること
+  check_5
 end

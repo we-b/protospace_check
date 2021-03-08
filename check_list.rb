@@ -25,6 +25,7 @@ def check_1
   end
 end
 
+
 # ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていること
 def check_2
   check_detail = {"チェック番号"=> 2, "チェック合否"=> "", "チェック内容"=> "ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていること", "チェック詳細"=> ""}
@@ -44,6 +45,116 @@ def check_2
     @check_log.push(check_detail)
   end
 end
+
+# ログアウト状態では、ヘッダーに「新規登録」「ログイン」のリンクが表示されるよう実装しましょう
+# check_3
+
+
+
+# ログインのログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること
+# 現時点ではログインの場合のみの実装
+def check_4
+  check_detail = {"チェック番号"=> 4 , "チェック合否"=> "" , "チェック内容"=> "ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること" , "チェック詳細"=> ""}
+
+  begin
+    check_flag = 0
+
+    # トップ画面でのPrototype情報を取得
+    @wait.until {@d.find_element(:class, "card").displayed?}
+    top_prototype_img = @d.find_element(:class,"card__img").attribute("src") rescue "Error: class: card__img(画像)が見つかりません\n"
+    top_prototype_title = @d.find_element(:class,"card__title").text rescue "Error: class: card__title(Prototype名)が見つかりません\n"
+    top_prototype_catch_copy = @d.find_element(:class,"card__summary").text rescue "Error: class: card__summary(Prototypeのキャッチコピー)が見つかりません\n"
+    top_prototype_user_name = @d.find_element(:class,"card__user").text.delete("by ") rescue "Error: class: card__user(Prototypeのユーザー名)が見つかりません\n"
+
+    # トップ画面の表示内容をチェック
+    if top_prototype_img.include?(@prototype_image_name)
+      check_detail["チェック詳細"] << "◯：トップ画面にPrototypeの「画像」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：トップ画面にPrototypeの「画像」が表示されていない。\n"
+      check_detail["チェック詳細"] << top_prototype_img
+    end
+
+    if top_prototype_title == @prototype_title
+      check_detail["チェック詳細"] << "◯：トップ画面にPrototypeの「タイトル」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：トップ画面にPrototypeの「タイトル」が表示されていない。\n"
+      check_detail["チェック詳細"] << top_prototype_title
+    end
+
+    if top_prototype_catch_copy == @prototype_catch_copy
+      check_detail["チェック詳細"] << "◯：トップ画面にPrototypeの「キャッチコピー」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：トップ画面にPrototypeの「キャッチコピー」が表示されていない。\n"
+      check_detail["チェック詳細"] << prototype_catch_copy
+    end
+
+    if top_prototype_user_name == @user_name
+      check_detail["チェック詳細"] << "◯：トップ画面にPrototypeの「投稿者名」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：トップ画面にPrototypeの「投稿者名」が表示されていない。\n"
+      check_detail["チェック詳細"] << top_prototype_title
+    end
+
+    check_detail["チェック合否"] = check_flag == 4 ? "◯" : "×"
+
+  # トップ画面へ戻る
+  @d.get(@url)
+
+  # エラー発生有無にかかわらず実行
+  ensure
+    @check_log.push(check_detail)
+  end
+end
+
+
+# ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること
+# 現時点ではログインの場合のみの実装
+def check_5
+  check_detail = {"チェック番号"=> 5 , "チェック合否"=> "" , "チェック内容"=> "ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること" , "チェック詳細"=> ""}
+
+  begin
+    check_flag = 0
+
+    # 画像をクリックして、Prototype詳細画面に遷移するか確認
+    @d.find_element(:class,"card__img").click
+    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
+
+    if @d.find_element(:class, "prototype__wrapper").displayed?
+      check_detail["チェック詳細"] << "◯：ログイン・ログアウトの状態に関わらず、一覧表示されている画像をクリックすると、該当するプロトタイプの詳細ページへ遷移する。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：ログイン・ログアウトの状態に関わらず、一覧表示されている画像をクリックしても、該当するプロトタイプの詳細ページへ遷移しない。\n"
+    end
+
+    # トップ画面へ戻る
+    @d.get(@url)
+
+    # Prototypeのタイトルをクリックして、Prototype詳細画面に遷移するか確認
+    @d.find_element(:class,"card__title").click
+    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
+
+    if @d.find_element(:class, "prototype__wrapper").displayed?
+      check_detail["チェック詳細"] << "◯：ログイン・ログアウトの状態に関わらず、一覧表示されているプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移する。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：ログイン・ログアウトの状態に関わらず、一覧表示されているプロトタイプ名をクリックしても、該当するプロトタイプの詳細ページへ遷移しない。\n"
+    end
+
+    check_detail["チェック合否"] = check_flag == 2 ? "◯" : "×"
+
+    # トップ画面へ戻る
+    @d.get(@url)
+
+  # エラー発生有無にかかわらず実行
+  ensure
+    @check_log.push(check_detail)
+  end
+end
+
 
 
 #ユーザー新規登録画面でのエラーハンドリングログを取得
