@@ -26,11 +26,14 @@ def main
   # 「コンセプト」未入力でProtoType投稿
   create_prototype_without_concept
 
-  # ProtoType投稿
+  # Prototype投稿
   create_prototype
 
   # プロトタイプ詳細表示機能のチェック
   check_top_prototype_display
+
+  # Prototype編集
+  edit_prototype
 
 end
 
@@ -198,6 +201,36 @@ def login_user
   end
 end
 
+# 引数のデータを持つユーザーでログイン
+def login_any_user(email, pass)
+  @d.get(@url)
+  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+  # ログイン状態であればログアウトしておく
+  display_flag = @d.find_element(:class, "ログアウト").displayed? rescue false
+  if display_flag
+    @d.find_element(:link_text, "ログアウト").click
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+  end
+
+  @d.find_element(:link_text, "ログイン").click
+  @wait.until {@d.find_element(:id, 'user_email').displayed?}
+  @d.find_element(:id, 'user_email').send_keys(@user_email)
+  @wait.until {@d.find_element(:id, 'user_password').displayed?}
+  @d.find_element(:id, 'user_password').send_keys(@password)
+
+  @wait.until {@d.find_element(:class, "form__btn").displayed?}
+  @d.find_element(:class, "form__btn").click
+  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+  # トップページに遷移
+  @d.get(@url)
+  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+end
+
 
 # ProtoType投稿
 # コンセプト未入力
@@ -225,12 +258,11 @@ def create_prototype_without_concept
   if /新規プロトタイプ投稿/.match(@d.page_source)
     @puts_num_array[2][6] = "[2-006] ◯"  #：投稿に必要な情報が入力されていない場合は、投稿できずにそのページに留まること
     @puts_num_array[2][7] = "[2-007] ◯"  #：必要な情報を入力すると、投稿ができること
-
   elsif @d.find_element(:class, "card__wrapper").displayed?
-    @puts_num_array[2][6] = "[2-006] ×：コンセプトの入力なしでPrototype投稿をしても、Prototype投稿ページにリダイレクトされず、トップページへ遷移してしまう"
-    @puts_num_array[2][4] = "[2-004] ×：コンセプトの入力なしでも、Prototype投稿ができてしまう"
+    @puts_num_array[2][6] = "[2-006] ×：コンセプトの入力なしでPrototype投稿をしても、Prototype投稿ページにリダイレクトされず、トップページへ遷移してしまう。"
+    @puts_num_array[2][4] = "[2-004] ×：コンセプトの入力なしでも、Prototype投稿ができてしまう。"
   else
-    @puts_num_array[2][6] = "[2-006] ×：コンセプトの入力なしでPrototype投稿を行うと、Prototype投稿ページにリダイレクトされない"
+    @puts_num_array[2][6] = "[2-006] ×：コンセプトの入力なしでPrototype投稿を行うと、Prototype投稿ページにリダイレクトされない。"
   end
 end
 
@@ -294,9 +326,115 @@ def check_top_prototype_display
     @puts_num_array[3][1] = "[3-001] ×：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できない"
   end
 
-  # プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること
+  # プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること/ログインのログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること
   check_4
 
   # ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること
   check_5
+end
+
+
+# トップ画面にてPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移する
+def prototype_title_click_from_top(title)
+  # トップ画面のPrototype名要素を全部取得
+  prototypes = @d.find_elements(:class, "card__title")
+  prototypes.each{|prototype|
+    if prototype.text == title
+      prototype.click
+      @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
+      break
+    end
+  }
+end
+
+
+# ログイン状態
+# トップページ → Prototype詳細画面(自分で出品した商品) → Prototype編集(エラーハンドリング)
+def edit_prototype
+  # トップ画面にてPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移する
+  prototype_title_click_from_top(@prototype_title)
+
+  # 【4-001】ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること
+  if /編集する/.match(@d.page_source)
+    @puts_num_array[4][1] = "[4-001] ◯：ログイン状態の投稿したユーザーだけに、「編集する」のリンクが存在している。"
+    @flag_4_001 += 1
+  else
+    @puts_num_array[4][1] = "[4-001] ×：ログイン状態の投稿したユーザーでも、「編集する」のリンクが存在していない。"
+  end
+
+  if /削除する/.match(@d.page_source)
+    @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ◯：ログイン状態の投稿したユーザーだけに、「削除する」のリンクが存在している。"
+  else
+    @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ×：ログイン状態の投稿したユーザーでも、「削除する」のリンクが存在していない。"
+  end
+
+  # 【5-002】何も編集せずに更新をしても、画像無しのプロトタイプにならないこと
+  @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
+  @d.find_element(:partial_link_text, "編集").click
+
+
+  # 【5-002】何も編集せずに更新をしても、画像無しのプロトタイプにならないこと
+  @wait.until {/プロトタイプ編集/.match(@d.page_source) rescue false}
+  @d.find_element(:class, "form__btn").click
+
+  if @d.find_element(:class, "prototype__image").displayed?
+    @puts_num_array[5][2] = "[5-002] ◯：何も編集せずに更新をしても、画像無しのプロトタイプにならないこと。"
+  else
+    @puts_num_array[5][2] = "[5-002] ×：何も編集せずに更新をすると、画像無しのプロトタイプになってしまう。"
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    prototype_title_click_from_top(@prototype_title)
+  end
+
+  # 【5-003】空の入力欄がある場合は、編集できずにそのページに留まること
+  @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
+  @d.find_element(:partial_link_text, "編集").click
+  @wait.until {/プロトタイプ編集/.match(@d.page_source) rescue false}
+
+  @wait.until {@d.find_element(:id, "prototype_concept").displayed?}
+  @d.find_element(:id, "prototype_concept").clear
+  @d.find_element(:class, "form__btn").click
+
+  if /プロトタイプ編集/.match(@d.page_source)
+    @puts_num_array[5][3] = "[5-003] ◯：空の入力欄がある場合は、編集できずにそのページに留まること。"
+    @d.get(@url)
+    prototype_title_click_from_top(@prototype_title)
+  else
+    @puts_num_array[5][3] = "[5-003] ×：空の入力欄がある場合は、編集できずにそのページに留まること。"
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    prototype_title_click_from_top(@prototype_title)
+  end
+
+  @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
+  @d.find_element(:partial_link_text, "編集").click
+  @wait.until {/プロトタイプ編集/.match(@d.page_source) rescue false}
+
+  # 「キャッチコピー」項目に違う値を入れ、正常に編集できるか検証
+  @wait.until {@d.find_element(:id, "prototype_catch_copy").displayed?}
+  @d.find_element(:id, "prototype_catch_copy").clear
+  @d.find_element(:id, "prototype_catch_copy").send_keys(@prototype_catch_copy2)
+  @d.find_element(:class, "form__btn").click
+
+  # 【5-001】投稿に必要な情報を入力すると、プロトタイプが編集できること
+  if /#{@prototype_catch_copy2}/.match(@d.page_source)
+    @puts_num_array[5][1] = "[5-001] ◯：投稿に必要な情報を入力すると、プロトタイプが編集できること。"
+  elsif /#{@prototype_catch_copy}/.match(@d.page_source)
+    @puts_num_array[5][1] = "[5-001] ×：Prototype編集画面にて「キャッチコピー」を編集し保存ボタンをクリックしたが、編集前の情報が表示されている。"
+  elsif @d.find_element(:class, "card__wrapper").displayed?
+    @puts_num_array[5][1] = "[5-001] △：Prototype編集画面にて「キャッチコピー」を編集し保存ボタンをクリックすると、トップページへ遷移してしまうため、「キャッチコピー」項目を確認できません。\n手動確認をお願いします。"
+  else
+    @puts_num_array[5][1] = "[5-001] ×：Prototype編集画面にて「キャッチコピー」を編集し保存ボタンをクリックしたが、挙動が正常ではありません。"
+  end
+
+  # 【5-004】正しく編集できた場合は、詳細ページへ遷移すること
+  if @d.find_element(:class, "prototype__wrapper").displayed?
+    @puts_num_array[5][4] = "[5-004] ◯：正しく編集できた場合は、詳細ページへ遷移すること。"
+  else
+    @puts_num_array[5][4] = "[5-004] ×：Prototype編集ページで「保存する」を押下しても、詳細ページへ遷移しない。"
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    prototype_title_click_from_top(@prototype_title)
+  end
+
 end

@@ -61,13 +61,13 @@ def check_4
 
     # トップ画面でのPrototype情報を取得
     @wait.until {@d.find_element(:class, "card").displayed?}
-    top_prototype_img = @d.find_element(:class,"card__img").attribute("src") rescue "Error: class: card__img(画像)が見つかりません\n"
+    top_prototype_img = @d.find_element(:class,"card__img").attribute("src").to_s rescue "Error: class: card__img(画像)が見つかりません\n"
     top_prototype_title = @d.find_element(:class,"card__title").text rescue "Error: class: card__title(Prototype名)が見つかりません\n"
     top_prototype_catch_copy = @d.find_element(:class,"card__summary").text rescue "Error: class: card__summary(Prototypeのキャッチコピー)が見つかりません\n"
-    top_prototype_user_name = @d.find_element(:class,"card__user").text.delete("by ") rescue "Error: class: card__user(Prototypeのユーザー名)が見つかりません\n"
+    top_prototype_user_name = @d.find_element(:class,"card__user").text.delete("by ") rescue "Error: class: card__user(Prototypeの投稿者名)が見つかりません\n"
 
     # トップ画面の表示内容をチェック
-    if top_prototype_img.include?(@prototype_image_name)
+    if top_prototype_img&.include?(@prototype_image_name)
       check_detail["チェック詳細"] << "◯：トップ画面にPrototypeの「画像」が表示されている。\n"
       check_flag += 1
     else
@@ -88,7 +88,7 @@ def check_4
       check_flag += 1
     else
       check_detail["チェック詳細"] << "×：トップ画面にPrototypeの「キャッチコピー」が表示されていない。\n"
-      check_detail["チェック詳細"] << prototype_catch_copy
+      check_detail["チェック詳細"] << top_prototype_catch_copy
     end
 
     if top_prototype_user_name == @user_name
@@ -96,10 +96,96 @@ def check_4
       check_flag += 1
     else
       check_detail["チェック詳細"] << "×：トップ画面にPrototypeの「投稿者名」が表示されていない。\n"
-      check_detail["チェック詳細"] << top_prototype_title
+      check_detail["チェック詳細"] << top_prototype_user_name
     end
 
-    check_detail["チェック合否"] = check_flag == 4 ? "◯" : "×"
+    # Prototype詳細画面へ遷移
+    prototype_title_click_from_top(@prototype_title)
+
+    # Prototype詳細画面でのPrototype情報を取得
+    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
+    show_prototype_img = @d.find_element(:class, "prototype__image").attribute("src").to_s rescue "Error: class: prototype__image(画像)が見つかりません\n"
+    show_prototype_title = @d.find_element(:class, "prototype__hedding").text rescue "Error: class: prototype__hedding(Prototype名)が見つかりません\n"
+    show_prototype_catch_copy_and_concept = @d.find_elements(:class, "detail__message").text rescue "Error: class: detail__message(Prototypeのキャッチコピーまたはコンセプト)が見つかりません\n"
+    show_prototype_user_name = @d.find_element(:class, "prototype__user").text.delete("by ") rescue "Error: class: prototype__user(Prototypeの投稿者名)が見つかりません\n"
+
+    # Prototype詳細画面の表示内容をチェック
+    if show_prototype_img&.include?(@prototype_image_name)
+      check_detail["チェック詳細"] << "◯：Prototype詳細画面にPrototypeの「画像」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：Prototype詳細画面にPrototypeの「画像」が表示されていない。\n"
+      check_detail["チェック詳細"] << show_prototype_img
+    end
+
+    if show_prototype_title == @prototype_title
+      check_detail["チェック詳細"] << "◯：Prototype詳細画面にPrototypeの「タイトル」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：Prototype詳細画面にPrototypeの「タイトル」が表示されていない。\n"
+      check_detail["チェック詳細"] << show_prototype_title
+    end
+
+    if show_prototype_catch_copy_and_concept.include?(@prototype_catch_copy)
+      check_detail["チェック詳細"] << "◯：Prototype詳細画面にPrototypeの「キャッチコピー」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：Prototype詳細画面にPrototypeの「キャッチコピー」が表示されていない。\n"
+      check_detail["チェック詳細"] << show_prototype_catch_copy_and_concept
+    end
+
+    if show_prototype_catch_copy_and_concept&.include?(@prototype_concept)
+      check_detail["チェック詳細"] << "◯：Prototype詳細画面にPrototypeの「コンセプト」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：Prototype詳細画面にPrototypeの「コンセプト」が表示されていない。\n"
+      check_detail["チェック詳細"] << show_prototype_catch_copy_and_concept
+    end
+
+    if show_prototype_user_name == @user_name
+      check_detail["チェック詳細"] << "◯：Prototype詳細画面にPrototypeの「投稿者名」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：Prototype詳細画面にPrototypeの「投稿者名」が表示されていない。\n"
+      check_detail["チェック詳細"] << show_prototype_user_name
+    end
+
+    # Prototype編集画面へ遷移
+    @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
+    @d.find_element(:partial_link_text, "編集").click
+
+    # Prototype編集画面でのPrototype情報を取得
+    @wait.until {/プロトタイプ編集/.match(@d.page_source) rescue false}
+    edit_prototype_title = @d.find_element(:id, "prototype_title").text rescue "Error: id: prototype_title(Prototype名)が見つかりません\n"
+    edit_prototype_catch_copy = @d.find_element(:id, "prototype_catch_copy").text rescue "Error: id: prototype_catch_copy(Prototypeのキャッチコピー)が見つかりません\n"
+    edit_prototype_concept = @d.find_element(:id, "prototype_concept").text rescue "Error: class: detail__message(Prototypeのコンセプト)が見つかりません\n"
+
+    # Prototype編集画面の表示内容をチェック
+    if edit_prototype_title == @prototype_title
+      check_detail["チェック詳細"] << "◯：Prototype編集画面にPrototypeの「タイトル」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：Prototype編集画面にPrototypeの「タイトル」が表示されていない。\n"
+      check_detail["チェック詳細"] << edit_prototype_title
+    end
+
+    if edit_prototype_catch_copy == @prototype_catch_copy
+      check_detail["チェック詳細"] << "◯：Prototype編集画面にPrototypeの「キャッチコピー」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：Prototype編集画面にPrototypeの「キャッチコピー」が表示されていない。\n"
+      check_detail["チェック詳細"] << edit_prototype_catch_copy
+    end
+
+    if edit_prototype_concept == @prototype_concept
+      check_detail["チェック詳細"] << "◯：Prototype編集画面にPrototypeの「コンセプト」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：Prototype編集画面にPrototypeの「コンセプト」が表示されていない。\n"
+      check_detail["チェック詳細"] << edit_prototype_concept
+    end
+
+    check_detail["チェック合否"] = check_flag == 12 ? "◯" : "×"
 
   # トップ画面へ戻る
   @d.get(@url)
@@ -154,7 +240,6 @@ def check_5
     @check_log.push(check_detail)
   end
 end
-
 
 
 #ユーザー新規登録画面でのエラーハンドリングログを取得

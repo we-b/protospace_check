@@ -1,9 +1,15 @@
 require 'selenium-webdriver'
+require 'securerandom'
 require './main'
 require './check_list'
 
-#ランダム文字列の生成ライブラリ
-require 'securerandom'
+# 1つ目のウィンドウのID
+@window1_id = @d.window_handle
+# 2つ目のウィンドウを開く
+@d.execute_script( "window.open()" )
+# 2つ目のウィンドウのIDを取得
+@window2_id = @d.window_handles.last
+@d.switch_to.window(@window1_id)
 
 #テスト登録用emailのランダム文字列
 randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
@@ -19,8 +25,9 @@ randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
 @password = "aaa111"
 
 # Prototype投稿情報
-@prototype_title = "桜"
+@prototype_title = "NATURE"
 @prototype_catch_copy = "自然の息吹"
+@prototype_catch_copy2 = "色の迫力"
 @prototype_concept = "自然と感情"
 @prototype_image_name = "sakura.jpeg"
 @prototype_image = "/Users/mizutaryousuke/projects/protospace_check/sakura.jpeg"
