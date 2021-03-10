@@ -242,6 +242,42 @@ def check_5
 end
 
 
+# コメントを投稿すると、投稿したコメントと投稿者名が、対象プロトタイプの詳細ページにのみ表示されること
+def check_8
+  check_detail = {"チェック番号"=> 8 , "チェック合否"=> "" , "チェック内容"=> "コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細ページにのみ表示されること" , "チェック詳細"=> ""}
+
+  begin
+    check_flag = 0
+
+    # prototype詳細画面でのコメント情報を取得
+    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
+    comment = @d.find_element(:class, "comments_list").text rescue "Error: class: comments_list(コメント)が見つかりません\n"
+    comment_user = @d.find_element(:class, "comment_user").text rescue "Error: class: comment_user(コメント投稿者名)が見つかりません\n"
+
+    #  prototype詳細画面でのコメント表示内容をチェック
+    if comment.include?(@comment)
+      check_detail["チェック詳細"] << "◯：prototype詳細画面に「コメント」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：prototype詳細画面に「コメント」が表示されていない。\n"
+      check_detail["チェック詳細"] << comment
+    end
+
+    if comment_user.include?(@user_name2)
+      check_detail["チェック詳細"] << "◯：prototype詳細画面に「コメント投稿者名」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：prototype詳細画面に「コメント投稿者名」が表示されていない。\n"
+      check_detail["チェック詳細"] << comment_user
+    end
+
+    check_detail["チェック合否"] = check_flag == 2 ? "◯" : "×"
+  ensure
+    @check_log.push(check_detail)
+  end
+end
+
+
 #ユーザー新規登録画面でのエラーハンドリングログを取得
 def check_19_1
 

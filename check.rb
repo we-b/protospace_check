@@ -15,22 +15,29 @@ require './check_list'
 randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
 
 # ユーザー情報
-@user_email = "user_#{randm_word}@co.jp"
-@user_name = "テストユーザー"
+@user_email = "user1_#{randm_word}@co.jp"
+@user_name = "テストユーザー1"
 @user_profile = "aaa"
 @user_occupation = "bbb"
 @user_position = "ccc"
+
+@user_email2 = "user2_#{randm_word}@co.jp"
+@user_name2 = "テストユーザー2"
+@user_profile2 = "ddd"
+@user_occupation2 = "eee"
+@user_position2 = "fff"
 
 # パスワードは全ユーザー共通
 @password = "aaa111"
 
 # Prototype投稿情報
-@prototype_title = "荘厳"
-@prototype_catch_copy = "自然の息吹"
-@prototype_catch_copy2 = "色の迫力"
+@prototype_title = "大自然"
+@prototype_catch_copy = "色の迫力"
+@prototype_catch_copy2 = "自然の息吹"
 @prototype_concept = "自然と感情"
 @prototype_image_name = "sakura.jpeg"
 @prototype_image = "/Users/mizutaryousuke/projects/protospace_check/sakura.jpeg"
+@comment = "素晴らしい"
 
 @d = Selenium::WebDriver.for :chrome
 @wait = Selenium::WebDriver::Wait.new(:timeout => 180000)

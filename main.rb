@@ -38,6 +38,9 @@ def main
   # Prototype削除機能のチェック
   destroy_prototype
 
+  # Prototypeコメント機能のチェック
+  comment_prototype
+
 end
 
 
@@ -204,6 +207,25 @@ def login_user
   end
 end
 
+
+# 別名義のユーザーで新規登録/ログイン
+def login_user2
+  # 最初にログアウトしておく
+  @d.find_element(:link_text, "ログアウト").click
+  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+  # 新規登録
+  @d.find_element(:link_text, "新規登録").click
+  @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+
+  # 新規登録に必要な項目入力を行うメソッド
+  input_sign_up(@user_email2, @password, @user_name2, @user_profile2, @user_occupation2, @user_position2)
+
+  @d.find_element(:class,"form__btn").click
+  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+end
+
+
 # 引数のデータを持つユーザーでログイン
 def login_any_user(email, pass)
   @d.get(@url)
@@ -340,7 +362,7 @@ def check_top_prototype_display
 end
 
 
-# トップ画面にてPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移する
+# トップ画面でPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移
 def prototype_title_click_from_top(title)
   # トップ画面のPrototype名要素を全部取得
   prototypes = @d.find_elements(:class, "card__title")
@@ -354,8 +376,7 @@ def prototype_title_click_from_top(title)
 end
 
 
-# ログイン状態
-# トップページ → Prototype詳細画面(自分で出品した商品) → Prototype編集(エラーハンドリング)
+# Prototype編集機能のチェック
 def edit_prototype
   # トップ画面にてPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移する
   prototype_title_click_from_top(@prototype_title)
@@ -442,8 +463,9 @@ def edit_prototype
 end
 
 
+# Prototype削除機能のチェック
 def destroy_prototype
-  # トップ画面にてPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移する
+  # トップ画面でPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移
   prototype_title_click_from_top(@prototype_title)
 
   # 【6-001】削除が完了すると、トップページへ遷移すること
@@ -458,4 +480,64 @@ def destroy_prototype
     @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
     prototype_title_click_from_top(@prototype_title)
   end
+end
+
+
+# Prototypeコメント機能のチェック
+def comment_prototype
+
+  # 新規Prototype作成
+  @wait.until {@d.find_element(:link_text,"New Proto").displayed?}
+  @d.find_element(:link_text,"New Proto").click
+
+  @wait.until {/新規プロトタイプ投稿/.match(@d.page_source) rescue false}
+  input_prototype(@prototype_title, @prototype_catch_copy, @prototype_concept, @prototype_image)
+
+  @d.find_element(:class,"form__btn").click
+  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+  # 別名義のユーザーで新規登録/ログイン
+  login_user2
+
+  # トップ画面でPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移
+  prototype_title_click_from_top(@prototype_title)
+
+  # 【7-005】フォームを空のまま投稿しようとすると、投稿できずにそのページに留まること
+  @wait.until {@d.find_element(:class, "prototype__comments").displayed? rescue false}
+  @d.find_element(:class,"form__btn").click
+
+  if @d.find_element(:class, "prototype__comments").displayed?
+    @puts_num_array[7][5] = "[7-005] ◯：フォームを空のまま投稿しようとすると、投稿できずにそのページに留まること。"
+  else
+    @puts_num_array[7][5] = "[7-005] ×：フォームを空のまま投稿しても、他のページに遷移してしまう"
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    prototype_title_click_from_top(@prototype_title)
+  end
+
+  @wait.until {@d.find_element(:class, "prototype__comments").displayed? rescue false}
+  @d.find_element(:id, "comment_text").send_keys(@comment)
+  @d.find_element(:class,"form__btn").click
+
+  # 【7-002】正しくフォームを入力すると、コメントが投稿できること
+  if /#{@comment}/.match(@d.page_source)
+    @puts_num_array[7][2] = "[7-002] ◯：正しくフォームを入力すると、コメントが投稿できること。"
+  elsif @d.find_element(:class, "card__wrapper").displayed?
+    @puts_num_array[7][2] = "[7-002] △：フォームを入力して「送信する」ボタンを押下すると、トップページに遷移してしまう。"
+  else
+    @puts_num_array[7][2] = "[7-002] ×：フォームを入力して「送信する」ボタンを押下しても、正しく表示されていない。"
+  end
+
+  # 【7-003】コメントを投稿すると、詳細ページに戻ってくること
+  if @d.find_element(:class, "prototype__wrapper").displayed?
+    @puts_num_array[7][3] = "[7-003] ◯：コメントを投稿すると、詳細ページに戻ってくること。"
+  else
+    @puts_num_array[7][3] = "[7-003] ×：コメントを投稿しても、詳細ページへ留まらず違うページに遷移してしまう。"
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    prototype_title_click_from_top(@prototype_title)
+  end
+
+  # コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細ページにのみ表示されること
+  check_8
 end
