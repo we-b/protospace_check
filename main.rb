@@ -26,14 +26,17 @@ def main
   # 「コンセプト」未入力でProtoType投稿
   create_prototype_without_concept
 
-  # Prototype投稿
+  # Prototype投稿機能のチェック
   create_prototype
 
   # プロトタイプ詳細表示機能のチェック
   check_top_prototype_display
 
-  # Prototype編集
+  # Prototype編集機能のチェック
   edit_prototype
+
+  # Prototype削除機能のチェック
+  destroy_prototype
 
 end
 
@@ -142,17 +145,17 @@ def sign_up_retry
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if @d.find_element(:class, "card__wrapper").displayed?
-    @puts_num_array[1][1] = "[1-001] ◯"  #：メールアドレスが必須である"
-    @puts_num_array[1][2] = "[1-002] ◯"  #：メールアドレスは一意性である"      #これはまだ立証できない
-    @puts_num_array[1][3] = "[1-003] ◯"  #：メールアドレスは@を含む必要がある"  #これはまだ立証できない
-    @puts_num_array[1][4] = "[1-004] ◯"  #：パスワードが必須である"
+    @puts_num_array[1][1] = "[1-001] ◯：メールアドレスが必須である"
+    @puts_num_array[1][2] = "[1-002] ◯：メールアドレスは一意性である"  #これはまだ立証できない
+    @puts_num_array[1][3] = "[1-003] ◯：メールアドレスは@を含む必要がある" #これはまだ立証できない
+    @puts_num_array[1][4] = "[1-004] ◯：パスワードが必須である"
     # puts "[1-] ◯：パスワードは6文字以上である"  #これはまだ立証できない
-    @puts_num_array[1][5] = "[1-005] ◯"  #：パスワードは確認用を含めて2回入力する"  #これはまだ立証できない
-    @puts_num_array[1][6] = "[1-006] ◯"  #：ユーザー名が必須である"  #これはまだ立証できない
-    @puts_num_array[1][7] = "[1-007] ◯"  #：プロフィールが必須である"
-    @puts_num_array[1][8] = "[1-008] ◯"  #：所属が必須である"  #これはまだ立証できない
-    @puts_num_array[1][9] = "[1-009] ◯"  #：役職が必須である"  #これはまだ立証できない
-    @puts_num_array[1][10] = "[1-010] ◯"  #:必須項目に適切な値を入力すると、ユーザーの新規登録ができる
+    @puts_num_array[1][5] = "[1-005] ◯：パスワードは確認用を含めて2回入力する" #これはまだ立証できない
+    @puts_num_array[1][6] = "[1-006] ◯：ユーザー名が必須である" #これはまだ立証できない
+    @puts_num_array[1][7] = "[1-007] ◯：プロフィールが必須である"
+    @puts_num_array[1][8] = "[1-008] ◯：所属が必須である" #これはまだ立証できない
+    @puts_num_array[1][9] = "[1-009] ◯：役職が必須である"  #これはまだ立証できない
+    @puts_num_array[1][10] = "[1-010] ◯：必須項目に適切な値を入力すると、ユーザーの新規登録ができる"
   elsif /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][10] = "[1-010] ×：必須項目を入力してもユーザー登録ができない"
     @puts_num_array[0].push("ユーザーの新規登録ができません。ユーザー登録できない場合、以降の自動チェックにて不備が発生するため自動チェック処理を終了します")
@@ -168,7 +171,7 @@ def logout_from_the_topMenu
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if @d.find_element(:class, "card__wrapper").displayed?
-    @puts_num_array[1][13] = "[1-013] ◯"  #：トップページから、ログアウトができること
+    @puts_num_array[1][13] = "[1-013] ◯：トップページから、ログアウトができること"
   else
     @puts_num_array[1][13] = "[1-013] ×：トップページから、ログアウトができない"
     @puts_num_array[0].push("トップページから、ログアウトができません。この場合、以降の自動チェックにて不備が発生するため自動チェック処理を終了します")
@@ -194,7 +197,7 @@ def login_user
 
   # トップ画面に戻れているか
   if @d.find_element(:class, "card__wrapper").displayed?
-    @puts_num_array[1][12] = "[1-012] ◯"  #：必要な情報を入力すると、ログインができること
+    @puts_num_array[1][12] = "[1-012] ◯：必要な情報を入力すると、ログインができること"
   else
     @puts_num_array[1][12] = "[1-012] ×：ログインが出来ません。もしくはログイン後にトップページへ遷移しません。"
     @d.get(@url)
@@ -256,8 +259,8 @@ def create_prototype_without_concept
   @wait.until {/新規プロトタイプ投稿/.match(@d.page_source) rescue false}
 
   if /新規プロトタイプ投稿/.match(@d.page_source)
-    @puts_num_array[2][6] = "[2-006] ◯"  #：投稿に必要な情報が入力されていない場合は、投稿できずにそのページに留まること
-    @puts_num_array[2][7] = "[2-007] ◯"  #：必要な情報を入力すると、投稿ができること
+    @puts_num_array[2][6] = "[2-006] ◯：投稿に必要な情報が入力されていない場合は、投稿できずにそのページに留まること"
+    @puts_num_array[2][7] = "[2-007] ◯：必要な情報を入力すると、投稿ができること"
   elsif @d.find_element(:class, "card__wrapper").displayed?
     @puts_num_array[2][6] = "[2-006] ×：コンセプトの入力なしでPrototype投稿をしても、Prototype投稿ページにリダイレクトされず、トップページへ遷移してしまう。"
     @puts_num_array[2][4] = "[2-004] ×：コンセプトの入力なしでも、Prototype投稿ができてしまう。"
@@ -280,14 +283,17 @@ def create_prototype
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if @d.find_element(:class, "card__wrapper").displayed?
-    @puts_num_array[2][2] = "[2-002] ◯"  #：プロトタイプの名称が必須であること
-    @puts_num_array[2][3] = "[2-003] ◯"  #：キャッチコピーが必須であること
-    @puts_num_array[2][4] = "[2-004] ◯"  #：コンセプトの情報が必須であること
-    @puts_num_array[2][5] = "[2-005] ◯"  #：画像は1枚必須であること(ActiveStorageを使用)
-    @puts_num_array[2][7] = "[2-007] ◯"  #：必要な情報を入力すると、投稿ができることT
-    @puts_num_array[2][8] = "[2-008] ◯"  #：正しく投稿できた場合は、トップページへ遷移すること
+    @puts_num_array[2][2] = "[2-002] ◯：プロトタイプの名称が必須であること"
+    @puts_num_array[2][3] = "[2-003] ◯：キャッチコピーが必須であること"
+    @puts_num_array[2][4] = "[2-004] ◯：コンセプトの情報が必須であること"
+    @puts_num_array[2][5] = "[2-005] ◯：画像は1枚必須であること(ActiveStorageを使用)"
+    @puts_num_array[2][7] = "[2-007] ◯：必要な情報を入力すると、投稿ができること"
+    @puts_num_array[2][8] = "[2-008] ◯：正しく投稿できた場合は、トップページへ遷移すること"
+  else
+    @puts_num_array[2][8] = "[2-008] ×：Prototype投稿後には、トップページへ遷移しません"
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
   end
-
 end
 
 
@@ -321,7 +327,7 @@ end
 # ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧可能か確認
 def check_top_prototype_display
   if @d.find_element(:class, "card").displayed?
-    @puts_num_array[3][1] = "[3-001] ◯"  #：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること
+    @puts_num_array[3][1] = "[3-001] ◯：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること"
   else
     @puts_num_array[3][1] = "[3-001] ×：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できない"
   end
@@ -371,9 +377,6 @@ def edit_prototype
   # 【5-002】何も編集せずに更新をしても、画像無しのプロトタイプにならないこと
   @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
   @d.find_element(:partial_link_text, "編集").click
-
-
-  # 【5-002】何も編集せずに更新をしても、画像無しのプロトタイプにならないこと
   @wait.until {/プロトタイプ編集/.match(@d.page_source) rescue false}
   @d.find_element(:class, "form__btn").click
 
@@ -436,5 +439,23 @@ def edit_prototype
     @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
     prototype_title_click_from_top(@prototype_title)
   end
+end
 
+
+def destroy_prototype
+  # トップ画面にてPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移する
+  prototype_title_click_from_top(@prototype_title)
+
+  # 【6-001】削除が完了すると、トップページへ遷移すること
+  @wait.until {@d.find_element(:partial_link_text, "削除").displayed?}
+  @d.find_element(:partial_link_text, "削除").click
+
+  if @d.find_element(:class, "card__wrapper").displayed?
+    @puts_num_array[6][1] = "[6-001] ◯：Prototypeの削除が完了すると、トップページへ遷移すること。"
+  else
+    @puts_num_array[6][1] = "[6-001] ×：Prototypeの「削除ボタン」押下しても、トップページに遷移しない。"
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    prototype_title_click_from_top(@prototype_title)
+  end
 end
