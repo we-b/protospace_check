@@ -1,3 +1,4 @@
+require 'ruby_jard'
 require 'selenium-webdriver'
 require 'securerandom'
 require './main'
@@ -31,7 +32,7 @@ randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
 @password = "aaa111"
 
 # Prototype投稿情報
-@prototype_title = "大自然"
+@prototype_title = "荘厳"
 @prototype_catch_copy = "色の迫力"
 @prototype_catch_copy2 = "自然の息吹"
 @prototype_concept = "自然と感情"
@@ -65,18 +66,23 @@ ensure
    #メインチェック番号の出力([1-001]系のチェック)
    puts "↓↓↓ 【[1-001]系のチェックの詳細】 ↓↓↓"
 
-   #先にfor文に渡すチェック番号配列の長さを整数を生成しておく
+   #先にfor文に渡すチェック番号配列の長さの整数を生成しておく
    for_end_num = @puts_num_array.length
    for_end_num -= 1
    #index = 0はその他出力情報配列なのでindex = 1から出力していく
    for i in 1..for_end_num
-       #各セクション配列の中身を全てループ処理する
-       @puts_num_array[i].each{|check|
-           #チェック内容が格納されている時だけ出力する
-           if check != false
-               puts check
-           end
-       }
+    #各セクション配列の中身を全てループ処理する
+    @puts_num_array[i].each{|check|
+        #チェック内容が格納されている時だけ出力する
+        if check != false
+            if check.include?("001") && ! check.include?("1-001")
+                puts "--------------------------------------------------------------------------"
+                puts check
+            else
+                puts check
+            end
+        end
+    }
    end
 
   #チェック番号の詳細を出力

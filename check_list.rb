@@ -1,54 +1,9 @@
-# ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在すること
-def check_1
-  check_detail = {"チェック番号"=> 1, "チェック合否"=> "", "チェック内容"=> "ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在すること", "チェック詳細"=> ""}
-  check_flag = 0
+# パスワードは6文字以上であること
+# check_1
 
-  begin
-    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
-    if display_flag
-      check_ele1 = @d.find_element(:link_text, "ログアウト").displayed? ? "○：ログイン状態で、ヘッダーに「ログアウト」が表示されている\n" : "×：ログアウト状態では、ヘッダーに「ログアウト」が表示されない\n"
-      check_detail["チェック詳細"] << check_ele1
-      check_flag += 1
-    end
-
-    display_flag = @d.find_element(:link_text, "New Proto").displayed? rescue false
-    if display_flag
-      check_ele2 = @d.find_element(:link_text, "New Proto").displayed? ? "○：ログイン状態で、ヘッダーに「New Proto」が表示されている\n" : "×：ログアウト状態では、ヘッダーに「New Proto」が表示されない\n"
-      check_detail["チェック詳細"] << check_ele2
-      check_flag += 1
-    end
-
-    check_detail["チェック合否"] = check_flag == 2 ? "◯" : "×"
-
-  ensure
-    @check_log.push(check_detail)
-  end
-end
-
-
-# ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていること
-def check_2
-  check_detail = {"チェック番号"=> 2, "チェック合否"=> "", "チェック内容"=> "ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていること", "チェック詳細"=> ""}
-  check_flag = 0
-
-  begin
-    display_flag = /こんにちは/.match(@d.page_source) && @d.find_element(:link_text, "#{@user_name}さん").displayed? rescue false
-    if display_flag
-      check_ele1 = @d.find_element(:link_text, "#{@user_name}さん").displayed? ? "○：ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されている\n" : "×：ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていない\n"
-      check_detail["チェック詳細"] << check_ele1
-      check_flag += 1
-    end
-
-    check_detail["チェック合否"] = check_flag == 1 ? "◯" : "×"
-
-  ensure
-    @check_log.push(check_detail)
-  end
-end
 
 # ログアウト状態では、ヘッダーに「新規登録」「ログイン」のリンクが表示されるよう実装しましょう
 # check_3
-
 
 
 # ログインのログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること
@@ -104,13 +59,13 @@ def check_4
 
     # Prototype詳細画面でのPrototype情報を取得
     @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
-    show_prototype_img = @d.find_element(:class, "prototype__image").attribute("src").to_s rescue "Error: class: prototype__image(画像)が見つかりません\n"
+    show_prototype_img = @d.find_element(:class, "prototype__image").find_element(:tag_name, "img").attribute("src") rescue "Error: class: prototype__image(画像)が見つかりません\n"
     show_prototype_title = @d.find_element(:class, "prototype__hedding").text rescue "Error: class: prototype__hedding(Prototype名)が見つかりません\n"
-    show_prototype_catch_copy_and_concept = @d.find_elements(:class, "detail__message").text rescue "Error: class: detail__message(Prototypeのキャッチコピーまたはコンセプト)が見つかりません\n"
+    show_prototype_details = @d.find_elements(:class, "detail__message") rescue "Error: class: detail__message(Prototypeのキャッチコピーまたはコンセプト)が見つかりません\n"
     show_prototype_user_name = @d.find_element(:class, "prototype__user").text.delete("by ") rescue "Error: class: prototype__user(Prototypeの投稿者名)が見つかりません\n"
 
     # Prototype詳細画面の表示内容をチェック
-    if show_prototype_img&.include?(@prototype_image_name)
+    if show_prototype_img.include?(@prototype_image_name)
       check_detail["チェック詳細"] << "◯：Prototype詳細画面にPrototypeの「画像」が表示されている。\n"
       check_flag += 1
     else
@@ -126,28 +81,31 @@ def check_4
       check_detail["チェック詳細"] << show_prototype_title
     end
 
-    if show_prototype_catch_copy_and_concept.include?(@prototype_catch_copy)
-      check_detail["チェック詳細"] << "◯：Prototype詳細画面にPrototypeの「キャッチコピー」が表示されている。\n"
-      check_flag += 1
-    else
-      check_detail["チェック詳細"] << "×：Prototype詳細画面にPrototypeの「キャッチコピー」が表示されていない。\n"
-      check_detail["チェック詳細"] << show_prototype_catch_copy_and_concept
-    end
-
-    if show_prototype_catch_copy_and_concept&.include?(@prototype_concept)
-      check_detail["チェック詳細"] << "◯：Prototype詳細画面にPrototypeの「コンセプト」が表示されている。\n"
-      check_flag += 1
-    else
-      check_detail["チェック詳細"] << "×：Prototype詳細画面にPrototypeの「コンセプト」が表示されていない。\n"
-      check_detail["チェック詳細"] << show_prototype_catch_copy_and_concept
-    end
-
     if show_prototype_user_name == @user_name
       check_detail["チェック詳細"] << "◯：Prototype詳細画面にPrototypeの「投稿者名」が表示されている。\n"
       check_flag += 1
     else
       check_detail["チェック詳細"] << "×：Prototype詳細画面にPrototypeの「投稿者名」が表示されていない。\n"
       check_detail["チェック詳細"] << show_prototype_user_name
+    end
+
+    #  detail要素が文字列だったらエラー出力処理
+    if show_prototype_details.is_a?(String)
+      check_detail["チェック詳細"] << show_prototype_details
+    else
+      # 文字列以外 = 配列だったら正常に情報が取得できた時の処理
+      # prototype詳細情報の答えをハッシュに格納
+      prototype_detail_answers = { "キャッチコピー" => @prototype_catch_copy, "コンセプト" => @prototype_concept }
+      prototype_details_text = show_prototype_details.map { |e| e.text }
+
+      prototype_detail_answers.each{|k, v|
+        if prototype_details_text.include?(v)
+          check_detail["チェック詳細"] << "◯：Prototype詳細画面にPrototypeの「#{k}」が表示されている。\n"
+          check_flag += 1
+        else
+          check_detail["チェック詳細"] << "×：Prototype詳細画面にPrototypeの「#{k}」情報が表示されていない。\n"
+        end
+      }
     end
 
     # Prototype編集画面へ遷移
@@ -278,9 +236,8 @@ def check_8
 end
 
 
-#ユーザー新規登録画面でのエラーハンドリングログを取得
+# ユーザー新規登録画面でのエラーハンドリングログを取得
 def check_19_1
-
   #全項目未入力で「登録する」ボタンをクリック
   @d.find_element(:class, "form__btn").click
   @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}

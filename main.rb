@@ -1,7 +1,6 @@
 require './check_list'
 
 def main
-
   @url = "https://protospace2020.herokuapp.com"
   @d.get(@url)
 
@@ -16,12 +15,6 @@ def main
 
   # ログイン
   login_user
-
-  # ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在すること
-  check_1
-
-  # ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていること
-  check_2
 
   # 「コンセプト」未入力でProtoType投稿
   create_prototype_without_concept
@@ -65,7 +58,6 @@ def sign_up_without_profile
 
   @wait.until {@d.find_element(:id, 'user_profile').displayed?}
   @d.find_element(:id, 'user_profile').clear
-
   @d.find_element(:class,"form__btn").click
 end
 
@@ -152,7 +144,6 @@ def sign_up_retry
     @puts_num_array[1][2] = "[1-002] ◯：メールアドレスは一意性である"  #これはまだ立証できない
     @puts_num_array[1][3] = "[1-003] ◯：メールアドレスは@を含む必要がある" #これはまだ立証できない
     @puts_num_array[1][4] = "[1-004] ◯：パスワードが必須である"
-    # puts "[1-] ◯：パスワードは6文字以上である"  #これはまだ立証できない
     @puts_num_array[1][5] = "[1-005] ◯：パスワードは確認用を含めて2回入力する" #これはまだ立証できない
     @puts_num_array[1][6] = "[1-006] ◯：ユーザー名が必須である" #これはまだ立証できない
     @puts_num_array[1][7] = "[1-007] ◯：プロフィールが必須である"
@@ -198,12 +189,32 @@ def login_user
   @d.find_element(:class, "form__btn").click
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
-  # トップ画面に戻れているか
+  # 【1-012】必要な情報を入力すると、ログインができること
   if @d.find_element(:class, "card__wrapper").displayed?
     @puts_num_array[1][12] = "[1-012] ◯：必要な情報を入力すると、ログインができること"
   else
     @puts_num_array[1][12] = "[1-012] ×：ログインが出来ません。もしくはログイン後にトップページへ遷移しません。"
     @d.get(@url)
+  end
+
+  # 【1-014】ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在すること
+  if /ログアウト/.match(@d.page_source)
+    @puts_num_array[1][14] = "[1-014] ◯：ログイン状態では、ヘッダーに「ログアウト」のリンクが存在している。"
+  else
+    @puts_num_array[1][14] = "[1-014] ×：ログイン状態では、ヘッダーに「ログアウト」のリンクが存在していない。"
+  end
+
+  if /New Proto/.match(@d.page_source)
+    @puts_num_array[1][14] = @puts_num_array[1][14] + "[1-014] ◯：ログイン状態では、ヘッダーに「New Proto」のリンクが存在している。"
+  else
+    @puts_num_array[1][14] = @puts_num_array[1][14] + "[1-014] ×：ログイン状態では、ヘッダーに「New Proto」のリンクが存在していない。"
+  end
+
+  # 【1-015】ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていること
+  if /こんにちは/.match(@d.page_source) && @d.find_element(:link_text, "#{@user_name}さん").displayed?
+    @puts_num_array[1][15] = "[1-015] ◯：ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されている。"
+  else
+    @puts_num_array[1][15] = "[1-015] ×：ログイン状態では、トップページに「こんにちは、〇〇さん」とユーザー名が表示されていない。"
   end
 end
 
