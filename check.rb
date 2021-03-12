@@ -32,7 +32,7 @@ randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
 @password = "aaa111"
 
 # Prototype投稿情報
-@prototype_title = "荘厳"
+@prototype_title = "テスト3"
 @prototype_catch_copy = "色の迫力"
 @prototype_catch_copy2 = "自然の息吹"
 @prototype_concept = "自然と感情"
@@ -122,5 +122,6 @@ ensure
       puts "--------------------------------------------------------------------------"
   end
 
+  puts @user_email
   sleep 300000000
 end

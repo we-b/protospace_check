@@ -93,8 +93,6 @@ def check_4
     if show_prototype_details.is_a?(String)
       check_detail["チェック詳細"] << show_prototype_details
     else
-      # 文字列以外 = 配列だったら正常に情報が取得できた時の処理
-      # prototype詳細情報の答えをハッシュに格納
       prototype_detail_answers = { "キャッチコピー" => @prototype_catch_copy, "コンセプト" => @prototype_concept }
       prototype_details_text = show_prototype_details.map { |e| e.text }
 
@@ -145,8 +143,8 @@ def check_4
 
     check_detail["チェック合否"] = check_flag == 12 ? "◯" : "×"
 
-  # トップ画面へ戻る
-  @d.get(@url)
+    # トップ画面へ戻る
+    @d.get(@url)
 
   # エラー発生有無にかかわらず実行
   ensure
@@ -230,6 +228,85 @@ def check_8
     end
 
     check_detail["チェック合否"] = check_flag == 2 ? "◯" : "×"
+  ensure
+    @check_log.push(check_detail)
+  end
+end
+
+
+# ログイン・ログアウトの状態に関わらず、ユーザーの詳細ページにユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること
+def check_9
+  check_detail = {"チェック番号"=> 9 , "チェック合否"=> "" , "チェック内容"=> "ログイン・ログアウトの状態に関わらず、ユーザーの詳細ページにユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること" , "チェック詳細"=> ""}
+
+  begin
+    check_flag = 0
+
+    # ユーザー詳細ページでのユーザー情報を取得
+    @wait.until {/#{@user_name}/.match(@d.page_source) && /さんの情報/.match(@d.page_source) rescue false}
+    user_details = @d.find_elements(:class, "table__col2") rescue "Error: class: table__col2(ユーザーの詳細情報)が見つかりません\n"
+
+    # ユーザー詳細ページの表示内容をチェック
+    if user_details.is_a?(String)s
+      check_detail["チェック詳細"] << user_details
+    else
+      user_detail_answers = { "名前" => @user_name, "プロフィール" => @user_profile, "所属" => @user_position, "役職" => @user_occupation }
+      user_details_text = user_details.map { |e| e.text }
+
+      user_detail_answers.each{|k, v|
+        if user_details_text.include?(v)
+          check_detail["チェック詳細"] << "◯：ユーザー詳細画面にユーザーの「#{k}」が表示されている。\n"
+          check_flag += 1
+        else
+          check_detail["チェック詳細"] << "×：ユーザー詳細画面にユーザーの「#{k}」情報が表示されていない。\n"
+        end
+      }
+    end
+
+    # ユーザー詳細ページでのPrototype情報を取得
+    user_prototype_img = @d.find_element(:class, "card__img").attribute("src") rescue "Error: class: card__img(画像)が見つかりません\n"
+    user_prototype_title = @d.find_element(:class, "card__title").text rescue "Error: class: card__title(Prototype名)が見つかりません\n"
+    user_prototype_catch_copy = @d.find_element(:class, "card__summary").text rescue "Error: class: card__summary(Prototypeのキャッチコピー)が見つかりません\n"
+    user_prototype_user_name = @d.find_element(:class, "card__user").text.delete("by ") rescue "Error: class: card__user(Prototypeの投稿者名)が見つかりません\n"
+
+    # ユーザー詳細ページでのPrototype表示内容をチェック
+    if user_prototype_img.include?(@prototype_image_name)
+      check_detail["チェック詳細"] << "◯：ユーザー詳細画面にPrototypeの「画像」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：ユーザー詳細画面にPrototypeの「画像」が表示されていない。\n"
+      check_detail["チェック詳細"] << user_prototype_img
+    end
+
+    if user_prototype_title == @prototype_title
+      check_detail["チェック詳細"] << "◯：ユーザー詳細画面にPrototypeの「タイトル」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：ユーザー詳細画面にPrototypeの「タイトル」が表示されていない。\n"
+      check_detail["チェック詳細"] << user_prototype_title
+    end
+
+    if user_prototype_catch_copy == @prototype_catch_copy
+      check_detail["チェック詳細"] << "◯：ユーザー詳細画面にPrototypeの「タイトル」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：ユーザー詳細画面にPrototypeの「タイトル」が表示されていない。\n"
+      check_detail["チェック詳細"] << user_prototype_catch_copy
+    end
+
+    if user_prototype_user_name == @user_name
+      check_detail["チェック詳細"] << "◯：ユーザー詳細画面にPrototypeの「投稿者名」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：ユーザー詳細画面にPrototypeの「投稿者名」が表示されていない。\n"
+      check_detail["チェック詳細"] << user_prototype_user_name
+    end
+
+    check_detail["チェック合否"] = check_flag == 8 ? "◯" : "×"
+
+    # トップ画面へ戻る
+    @d.get(@url)
+
+  # エラー発生有無にかかわらず実行
   ensure
     @check_log.push(check_detail)
   end

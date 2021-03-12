@@ -16,13 +16,13 @@ def main
   # ログイン
   login_user
 
-  # 「コンセプト」未入力でProtoType投稿
+  # 「コンセプト」未入力でPrototype投稿
   create_prototype_without_concept
 
   # Prototype投稿機能のチェック
   create_prototype
 
-  # プロトタイプ詳細表示機能のチェック
+  # Prototype詳細表示機能のチェック
   check_top_prototype_display
 
   # Prototype編集機能のチェック
@@ -31,8 +31,11 @@ def main
   # Prototype削除機能のチェック
   destroy_prototype
 
-  # Prototypeコメント機能のチェック
+  # コメント機能のチェック
   comment_prototype
+
+  # ユーザー詳細機能のチェック
+  show_user
 
 end
 
@@ -551,4 +554,36 @@ def comment_prototype
 
   # コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細ページにのみ表示されること
   check_8
+end
+
+
+# ユーザー詳細機能のチェック
+def show_user
+  # 【8-001】ログイン・ログアウトの状態に関わらず、各ページのユーザー名をクリックすると、ユーザーの詳細ページへ遷移すること
+  # トップページで検証
+  @d.get(@url)
+  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+  @d.find_element(:class, "card__user").click
+  @wait.until {/#{@user_name}/.match(@d.page_source) && /さんの情報/.match(@d.page_source) rescue false}
+
+  if /#{@user_name}/.match(@d.page_source) && /さんの情報/.match(@d.page_source)
+    @puts_num_array[8][1] = "[8-001] ◯：ログイン・ログアウトの状態に関わらず、トップページのユーザー名をクリックすると、ユーザーの詳細ページへ遷移すること。"
+  else
+    @puts_num_array[8][1] = "[8-001] ×：ログイン・ログアウトの状態に関わらず、トップページのユーザー名をクリックしても、ユーザーの詳細ページへ遷移しない。"
+  end
+
+  # Prototype詳細ページで検証
+  @d.get(@url)
+  prototype_title_click_from_top(@prototype_title)
+  @d.find_element(:class, "prototype__user").click
+  @wait.until {/#{@user_name}/.match(@d.page_source) && /さんの情報/.match(@d.page_source) rescue false}
+
+  if /#{@user_name}/.match(@d.page_source) && /さんの情報/.match(@d.page_source)
+    @puts_num_array[8][1] = @puts_num_array[8][1] + "\n[8-001] ◯：ログイン・ログアウトの状態に関わらず、プロトタイプ詳細ページのユーザー名をクリックすると、ユーザーの詳細ページへ遷移すること。"
+  else
+    @puts_num_array[8][1] = @puts_num_array[8][1] + "\n[8-001] ×：ログイン・ログアウトの状態に関わらず、プロトタイプ詳細ページのユーザー名をクリックしても、ユーザーの詳細ページへ遷移しない。"
+  end
+
+  # ログイン・ログアウトの状態に関わらず、ユーザーの詳細ページにユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること
+  check_9
 end
