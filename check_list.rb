@@ -153,10 +153,10 @@ def check_4
 end
 
 
-# ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること
+# ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移すること
 # 現時点ではログインの場合のみの実装
 def check_5
-  check_detail = {"チェック番号"=> 5 , "チェック合否"=> "" , "チェック内容"=> "ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移すること" , "チェック詳細"=> ""}
+  check_detail = {"チェック番号"=> 5 , "チェック合否"=> "" , "チェック内容"=> "ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移すること" , "チェック詳細"=> ""}
 
   begin
     check_flag = 0
@@ -166,10 +166,10 @@ def check_5
     @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
 
     if @d.find_element(:class, "prototype__wrapper").displayed?
-      check_detail["チェック詳細"] << "◯：ログイン・ログアウトの状態に関わらず、一覧表示されている画像をクリックすると、該当するプロトタイプの詳細ページへ遷移する。\n"
+      check_detail["チェック詳細"] << "◯：ログイン・ログアウトの状態に関わらず、一覧表示されている画像をクリックすると、該当するプロトタイプの詳細画面へ遷移する。\n"
       check_flag += 1
     else
-      check_detail["チェック詳細"] << "×：ログイン・ログアウトの状態に関わらず、一覧表示されている画像をクリックしても、該当するプロトタイプの詳細ページへ遷移しない。\n"
+      check_detail["チェック詳細"] << "×：ログイン・ログアウトの状態に関わらず、一覧表示されている画像をクリックしても、該当するプロトタイプの詳細画面へ遷移しない。\n"
     end
 
     # トップ画面へ戻る
@@ -180,10 +180,10 @@ def check_5
     @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
 
     if @d.find_element(:class, "prototype__wrapper").displayed?
-      check_detail["チェック詳細"] << "◯：ログイン・ログアウトの状態に関わらず、一覧表示されているプロトタイプ名をクリックすると、該当するプロトタイプの詳細ページへ遷移する。\n"
+      check_detail["チェック詳細"] << "◯：ログイン・ログアウトの状態に関わらず、一覧表示されているプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移する。\n"
       check_flag += 1
     else
-      check_detail["チェック詳細"] << "×：ログイン・ログアウトの状態に関わらず、一覧表示されているプロトタイプ名をクリックしても、該当するプロトタイプの詳細ページへ遷移しない。\n"
+      check_detail["チェック詳細"] << "×：ログイン・ログアウトの状態に関わらず、一覧表示されているプロトタイプ名をクリックしても、該当するプロトタイプの詳細画面へ遷移しない。\n"
     end
 
     check_detail["チェック合否"] = check_flag == 2 ? "◯" : "×"
@@ -198,9 +198,9 @@ def check_5
 end
 
 
-# コメントを投稿すると、投稿したコメントと投稿者名が、対象プロトタイプの詳細ページにのみ表示されること
+# コメントを投稿すると、投稿したコメントと投稿者名が、対象プロトタイプの詳細画面にのみ表示されること
 def check_8
-  check_detail = {"チェック番号"=> 8 , "チェック合否"=> "" , "チェック内容"=> "コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細ページにのみ表示されること" , "チェック詳細"=> ""}
+  check_detail = {"チェック番号"=> 8 , "チェック合否"=> "" , "チェック内容"=> "コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細画面にのみ表示されること" , "チェック詳細"=> ""}
 
   begin
     check_flag = 0
@@ -234,19 +234,18 @@ def check_8
 end
 
 
-# ログイン・ログアウトの状態に関わらず、ユーザーの詳細ページにユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること
+# ログイン・ログアウトの状態に関わらず、ユーザーの詳細画面にユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること
 def check_9
-  check_detail = {"チェック番号"=> 9 , "チェック合否"=> "" , "チェック内容"=> "ログイン・ログアウトの状態に関わらず、ユーザーの詳細ページにユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること" , "チェック詳細"=> ""}
+  check_detail = {"チェック番号"=> 9 , "チェック合否"=> "" , "チェック内容"=> "ログイン・ログアウトの状態に関わらず、ユーザーの詳細画面にユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること" , "チェック詳細"=> ""}
 
   begin
     check_flag = 0
 
-    # ユーザー詳細ページでのユーザー情報を取得
-    @wait.until {/#{@user_name}/.match(@d.page_source) && /さんの情報/.match(@d.page_source) rescue false}
+    # ユーザー詳細画面でのユーザー情報を取得
     user_details = @d.find_elements(:class, "table__col2") rescue "Error: class: table__col2(ユーザーの詳細情報)が見つかりません\n"
 
-    # ユーザー詳細ページの表示内容をチェック
-    if user_details.is_a?(String)s
+    # ユーザー詳細画面の表示内容をチェック
+    if user_details.is_a?(String)
       check_detail["チェック詳細"] << user_details
     else
       user_detail_answers = { "名前" => @user_name, "プロフィール" => @user_profile, "所属" => @user_position, "役職" => @user_occupation }
@@ -262,13 +261,13 @@ def check_9
       }
     end
 
-    # ユーザー詳細ページでのPrototype情報を取得
+    # ユーザー詳細画面でのPrototype情報を取得
     user_prototype_img = @d.find_element(:class, "card__img").attribute("src") rescue "Error: class: card__img(画像)が見つかりません\n"
     user_prototype_title = @d.find_element(:class, "card__title").text rescue "Error: class: card__title(Prototype名)が見つかりません\n"
     user_prototype_catch_copy = @d.find_element(:class, "card__summary").text rescue "Error: class: card__summary(Prototypeのキャッチコピー)が見つかりません\n"
     user_prototype_user_name = @d.find_element(:class, "card__user").text.delete("by ") rescue "Error: class: card__user(Prototypeの投稿者名)が見つかりません\n"
 
-    # ユーザー詳細ページでのPrototype表示内容をチェック
+    # ユーザー詳細画面でのPrototype表示内容をチェック
     if user_prototype_img.include?(@prototype_image_name)
       check_detail["チェック詳細"] << "◯：ユーザー詳細画面にPrototypeの「画像」が表示されている。\n"
       check_flag += 1
@@ -313,6 +312,36 @@ def check_9
 end
 
 
+# ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされること
+def check_10
+  check_detail = {"チェック番号"=> 10 , "チェック合否"=> "" , "チェック内容"=> "ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされること" , "チェック詳細"=> ""}
+  check_flag = 0
+
+  begin
+    # user2ログイン状態でコート(user1出品)編集画面に直接遷移する
+    @d.get(@edit_prototype_url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+    # トップ画面に遷移であれば正解
+    if @d.find_element(:class, "card__wrapper").displayed?
+      check_detail["チェック詳細"] << "◯：ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされる。\n"
+      check_flag += 1
+    elsif /ユーザー新規登録/.match(@d.page_source)
+      check_detail["チェック詳細"] << "×：ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、ログイン画面に遷移してしまう。\n"
+    else
+      check_detail["チェック詳細"] << "×：ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面/ログイン画面以外に遷移してしまう。\n"
+    end
+
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+    check_detail["チェック合否"] = check_flag == 1 ? "◯" : "×"
+  ensure
+    @check_log.push(check_detail)
+  end
+end
+
+
 # ユーザー新規登録画面でのエラーハンドリングログを取得
 def check_19_1
   #全項目未入力で「登録する」ボタンをクリック
@@ -325,7 +354,7 @@ def check_19_1
     @error_log_hash["新規登録"] << "↓↓↓ エラーログ全文(出力された内容) ↓↓↓\n"
   else
     #登録できてしまう場合
-    @error_log_hash["新規登録"] = "×：【ユーザー新規登録画面】にて全項目未入力の状態で登録ボタンを押すと、リダイレクトせず登録画面以外のページへ遷移してしまう(登録できてしまっている可能性あり)\n"
+    @error_log_hash["新規登録"] = "×：【ユーザー新規登録画面】にて全項目未入力の状態で登録ボタンを押すと、リダイレクトせず登録画面以外の画面へ遷移してしまう(登録できてしまっている可能性あり)\n"
 
     #トップ画面へ
     @d.get(@url)
@@ -342,6 +371,5 @@ def check_19_1
     #再度新規登録画面へ
     @d.find_element(:link_text, "新規登録").click
     @wait.until {@d.find_element(:text, "ユーザー新規登録").displayed? rescue false}
-
   end
 end
