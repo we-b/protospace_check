@@ -25,23 +25,23 @@ def main
   # Prototype詳細表示機能のチェック
   check_top_prototype_display
 
-  # # Prototype編集機能のチェック
-  # edit_prototype
+  # Prototype編集機能のチェック
+  edit_prototype
 
-  # # Prototype削除機能のチェック
-  # destroy_prototype
+  # Prototype削除機能のチェック
+  destroy_prototype
 
-  # # コメント機能のチェック
-  # comment_prototype
+  # コメント機能のチェック
+  comment_prototype
 
-  # # ユーザー詳細機能のチェック
-  # show_user
+  # ユーザー詳細機能のチェック
+  show_user
 
-  # # ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされること
-  # check_10
+  # ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされること
+  check_10
 
-  # # ログアウト状態でのチェック
-  # logout_check
+  # ログアウト状態でのチェック
+  logout_check
 end
 
 
@@ -317,7 +317,6 @@ end
 
 # Prototype投稿に必要な全ての入力を行う
 def create_prototype
-
   # Prototype投稿時の必須項目を全クリアにするメソッド
   clear_prototype
 
@@ -368,9 +367,9 @@ def clear_prototype
   @d.find_element(:id,"prototype_image").clear
 end
 
-
-# ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧可能か確認
+# Prototype詳細表示機能のチェック
 def check_top_prototype_display
+  # 【3-001】ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧可能か確認
   if @d.find_element(:class, "card").displayed?
     @puts_num_array[3][1] = "[3-001] ◯：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること"
   else
@@ -405,23 +404,33 @@ def edit_prototype
   prototype_title_click_from_top(@prototype_title)
 
   # 【4-001】ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること
-  if /編集する/.match(@d.page_source)
-    @puts_num_array[4][1] = "[4-001] ◯：ログイン状態の投稿したユーザーだけに、「編集する」のリンクが存在している。"
+  if /編集/.match(@d.page_source)
     @flag_4_001 += 1
   else
-    @puts_num_array[4][1] = "[4-001] ×：ログイン状態の投稿したユーザーでも、「編集する」のリンクが存在していない。"
+    @puts_num_array[4][1] = "[4-001] ×：ログイン状態の投稿したユーザーでも、「編集」のリンクが存在していない。"
   end
 
-  if /削除する/.match(@d.page_source)
-    @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ◯：ログイン状態の投稿したユーザーだけに、「削除する」のリンクが存在している。"
+  if /削除/.match(@d.page_source)
+    @flag_4_001 += 1
   else
-    @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ×：ログイン状態の投稿したユーザーでも、「削除する」のリンクが存在していない。"
+    @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ×：ログイン状態の投稿したユーザーでも、「削除」のリンクが存在していない。"
   end
 
-  # 【5-002】何も編集せずに更新をしても、画像無しのプロトタイプにならないこと
+  # 【5-003】ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから編集ボタンをクリックすると、編集ページへ遷移できること
   @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
   @d.find_element(:partial_link_text, "編集").click
   @wait.until {/プロトタイプ編集/.match(@d.page_source) rescue false}
+
+  if /プロトタイプ編集/.match(@d.page_source)
+    @puts_num_array[5][3] = "[5-003] ◯：ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから編集ボタンをクリックすると、編集ページへ遷移できること。"
+  else
+    @puts_num_array[5][3] = "[5-003] ×：ログイン状態のユーザーで、自身の投稿したプロトタイプの詳細ページから編集ボタンをクリックしても、編集ページへ遷移できない。"
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    prototype_title_click_from_top(@prototype_title)
+  end
+
+  # 【5-002】何も編集せずに更新をしても、画像無しのプロトタイプにならないこと
   @d.find_element(:class, "form__btn").click
 
   if @d.find_element(:class, "prototype__image").displayed?
@@ -433,7 +442,7 @@ def edit_prototype
     prototype_title_click_from_top(@prototype_title)
   end
 
-  # 【5-003】空の入力欄がある場合は、編集できずにその画面に留まること
+  # 【5-004】空の入力欄がある場合は、編集できずにその画面に留まること
   @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
   @d.find_element(:partial_link_text, "編集").click
   @wait.until {/プロトタイプ編集/.match(@d.page_source) rescue false}
@@ -443,11 +452,11 @@ def edit_prototype
   @d.find_element(:class, "form__btn").click
 
   if /プロトタイプ編集/.match(@d.page_source)
-    @puts_num_array[5][3] = "[5-003] ◯：空の入力欄がある場合は、編集できずにその画面に留まること。"
+    @puts_num_array[5][4] = "[5-004] ◯：空の入力欄がある場合は、編集できずにその画面に留まること。"
     @d.get(@url)
     prototype_title_click_from_top(@prototype_title)
   else
-    @puts_num_array[5][3] = "[5-003] ×：空の入力欄がある場合は、編集できずにその画面に留まること。"
+    @puts_num_array[5][4] = "[5-004] ×：空の入力欄がある場合は、編集できずにその画面に留まること。"
     @d.get(@url)
     @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
     prototype_title_click_from_top(@prototype_title)
@@ -474,11 +483,11 @@ def edit_prototype
     @puts_num_array[5][1] = "[5-001] ×：Prototype編集画面にて「キャッチコピー」を編集し保存ボタンをクリックしたが、挙動が正常ではありません。"
   end
 
-  # 【5-004】正しく編集できた場合は、詳細画面へ遷移すること
+  # 【5-005】正しく編集できた場合は、詳細画面へ遷移すること
   if @d.find_element(:class, "prototype__wrapper").displayed?
-    @puts_num_array[5][4] = "[5-004] ◯：正しく編集できた場合は、詳細画面へ遷移すること。"
+    @puts_num_array[5][5] = "[5-005] ◯：正しく編集できた場合は、詳細画面へ遷移すること。"
   else
-    @puts_num_array[5][4] = "[5-004] ×：Prototype編集画面で「保存する」を押下しても、詳細画面へ遷移しない。"
+    @puts_num_array[5][5] = "[5-005] ×：Prototype編集画面で「保存する」を押下しても、詳細画面へ遷移しない。"
     @d.get(@url)
     @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
     prototype_title_click_from_top(@prototype_title)
@@ -491,14 +500,17 @@ def destroy_prototype
   # トップ画面でPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移
   prototype_title_click_from_top(@prototype_title)
 
-  # 【6-001】削除が完了すると、トップ画面へ遷移すること
+  # 【6-001】ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから削除ボタンをクリックすると、プロトタイプを削除できること
+  # 【6-002】削除が完了すると、トップ画面へ遷移すること
   @wait.until {@d.find_element(:partial_link_text, "削除").displayed?}
   @d.find_element(:partial_link_text, "削除").click
 
   if @d.find_element(:class, "card__wrapper").displayed?
-    @puts_num_array[6][1] = "[6-001] ◯：Prototypeの削除が完了すると、トップ画面へ遷移すること。"
+    @puts_num_array[6][1] = "[6-001] ◯：ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから削除ボタンをクリックすると、プロトタイプを削除できること。"
+    @puts_num_array[6][2] = "[6-002] ◯：Prototypeの削除が完了すると、トップ画面へ遷移すること。"
   else
-    @puts_num_array[6][1] = "[6-001] ×：Prototypeの「削除ボタン」押下しても、トップ画面に遷移しない。"
+    @puts_num_array[6][1] = "[6-001] ×：ログイン状態のユーザーで、自身の投稿したプロトタイプの詳細ページから削除ボタンをクリックしても、プロトタイプを削除できない。"
+    @puts_num_array[6][2] = "[6-002] ×：Prototypeの「削除ボタン」押下しても、トップ画面に遷移しない。"
     @d.get(@url)
     @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
     prototype_title_click_from_top(@prototype_title)
@@ -524,12 +536,24 @@ def comment_prototype
 
   # トップ画面でPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移
   prototype_title_click_from_top(@prototype_title)
+  @wait.until {@d.find_element(:class, "prototype__comments").displayed? rescue false}
+
+  # check_10で使用
+  @edit_prototype_url = @d.current_url + "/edit"
+
+  # 【7-001】コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること
+  if @d.find_element(:id, "comment_text").displayed?
+    @flag_7_001 += 1
+  else
+    @puts_num_array[7][1] = "[7-001] ×：ログイン状態のユーザーでも、プロトタイプ詳細ページにコメント投稿欄が表示されていない。"
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    prototype_title_click_from_top(@prototype_title)
+  end
 
   # 【7-005】フォームを空のまま投稿しようとすると、投稿できずにその画面に留まること
+  @d.find_element(:class, "form__btn").click
   @wait.until {@d.find_element(:class, "prototype__comments").displayed? rescue false}
-  # check_10で使用する。
-  @edit_prototype_url = @d.current_url + "/edit"
-  @d.find_element(:class,"form__btn").click
 
   if @d.find_element(:class, "prototype__comments").displayed?
     @puts_num_array[7][5] = "[7-005] ◯：フォームを空のまま投稿しようとすると、投稿できずにその画面に留まること。"
@@ -639,12 +663,48 @@ def logout_check
   @wait.until {/ログイン/.match(@d.page_source) rescue false}
 
   if /ログイン/.match(@d.page_source)
-    @puts_num_array[9][1] = @puts_num_array[9][1] + "\n[9-001] ◯：ログアウト状態のユーザーは、プロトタイプ編集画面に遷移しようとすると、ログインページにリダイレクトされること"
+    @puts_num_array[9][1] = @puts_num_array[9][1] + "\n[9-001] ◯：ログアウト状態のユーザーは、プロトタイプ編集画面に遷移しようとすると、ログインページにリダイレクトされること。"
   elsif /プロトタイプ編集/.match(@d.page_source)
     @puts_num_array[9][1] = @puts_num_array[9][1] + "\n[9-001] ×：ログアウト状態のユーザーが、プロトタイプ編集画面に遷移できてしまう。"
   elsif @d.find_element(:class, "card__wrapper").displayed?
     @puts_num_array[9][1] = @puts_num_array[9][1] + "\n[9-001] ×：ログアウト状態のユーザーが、プロトタイプ編集画面へ遷移しようとするとトップ画面に遷移してしまう。"
   else
     @puts_num_array[9][1] = @puts_num_array[9][1] + "\n[9-001] ×：ログアウト状態のユーザーが、プロトタイプ編集画面へ遷移しようとすると不適切なページへ遷移してしまう。"
+  end
+
+  # 【4-001】ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること
+  @d.get(@url)
+  prototype_title_click_from_top(@prototype_title)
+
+  if /編集/.match(@d.page_source)
+    @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ×：ログアウト状態の投稿したユーザーでも、「編集」のリンクが存在している"
+  else
+    @flag_4_001 += 1
+  end
+
+  if /削除/.match(@d.page_source)
+    @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ×：ログアウト状態の投稿したユーザーでも、「削除」のリンクが存在している"
+  else
+    @flag_4_001 += 1
+  end
+
+  if @flag_4_001 == 4
+    @puts_num_array[4][1] = "[4-001] ◯：ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在している。"
+  else
+    @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ×：ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在していない。"
+  end
+
+  # 【7-001】コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること
+  # 修正の必要あり
+  if @d.find_element(:id, "comment_text").displayed?
+    @puts_num_array[7][1] = @puts_num_array[7][1] + "\n[7-001] ×：ログアウト状態のユーザーでも、プロトタイプ詳細ページにコメント投稿欄が表示されている。"
+  else
+    @flag_7_001 += 1
+  end
+
+  if @flag_7_001 == 2
+    @puts_num_array[7][1] = "[7-001] ◯：コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること。"
+  else
+    @puts_num_array[7][1] = @puts_num_array[7][1] + "\n[7-001] ×：ログイン状態のユーザーへのみ、プロトタイプ詳細ページにコメント投稿欄が表示されていない。"
   end
 end
