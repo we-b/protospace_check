@@ -32,7 +32,7 @@ randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
 @password = "aaa111"
 
 # Prototype投稿情報
-@prototype_title = "誕生"
+@prototype_title = "Nature"
 @prototype_catch_copy = "色の迫力"
 @prototype_catch_copy2 = "自然の息吹"
 @prototype_concept = "自然と感情"
@@ -57,8 +57,11 @@ randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
 @puts_num_array = Array.new(10).map{Array.new(30, false)}
 
 #各チェックのフラグ変数
+@flag_3_001 = 0;
+@flag_3_002 = 0;
 @flag_4_001 = 0;
 @flag_7_001 = 0;
+@flag_8_001 = 0;
 
 begin
   main()

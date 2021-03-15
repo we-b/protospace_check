@@ -371,16 +371,40 @@ end
 def check_top_prototype_display
   # 【3-001】ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧可能か確認
   if @d.find_element(:class, "card").displayed?
-    @puts_num_array[3][1] = "[3-001] ◯：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること"
+    @flag_3_001 += 1
   else
-    @puts_num_array[3][1] = "[3-001] ×：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できない"
+    @puts_num_array[3][1] = "[3-001] ×：ログイン状態では、プロトタイプ一覧を閲覧できない。"
   end
 
   # プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること/ログインのログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること
   check_4
 
-  # ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移すること
-  check_5
+  # 【3-002】ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移すること
+  # 画像をクリックして、Prototype詳細画面に遷移するか確認
+  @d.find_element(:class,"card__img").click
+  @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
+
+  if @d.find_element(:class, "prototype__wrapper").displayed?
+    @flag_3_002 += 1
+  else
+    @puts_num_array[3][2] =  "×：ログイン状態で、一覧表示されている画像をクリックしても、該当するプロトタイプの詳細画面へ遷移しない。\n"
+  end
+
+  # トップ画面へ戻る
+  @d.get(@url)
+
+  # Prototypeのタイトルをクリックして、Prototype詳細画面に遷移するか確認
+  @d.find_element(:class,"card__title").click
+  @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
+
+  if @d.find_element(:class, "prototype__wrapper").displayed?
+    @flag_3_002 += 1
+  else
+    @puts_num_array[3][2] = @puts_num_array[3][2] + "×：ログイン状態で、一覧表示されているプロトタイプ名をクリックしても、該当するプロトタイプの詳細画面へ遷移しない。\n"
+  end
+
+  # トップ画面へ戻る
+  @d.get(@url)
 end
 
 
@@ -428,10 +452,12 @@ def edit_prototype
     @d.get(@url)
     @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
     prototype_title_click_from_top(@prototype_title)
+    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
   end
 
   # 【5-002】何も編集せずに更新をしても、画像無しのプロトタイプにならないこと
   @d.find_element(:class, "form__btn").click
+  @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
 
   if @d.find_element(:class, "prototype__image").displayed?
     @puts_num_array[5][2] = "[5-002] ◯：何も編集せずに更新をしても、画像無しのプロトタイプにならないこと。"
@@ -440,16 +466,17 @@ def edit_prototype
     @d.get(@url)
     @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
     prototype_title_click_from_top(@prototype_title)
+    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
   end
 
   # 【5-004】空の入力欄がある場合は、編集できずにその画面に留まること
-  @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
   @d.find_element(:partial_link_text, "編集").click
   @wait.until {/プロトタイプ編集/.match(@d.page_source) rescue false}
 
   @wait.until {@d.find_element(:id, "prototype_concept").displayed?}
   @d.find_element(:id, "prototype_concept").clear
   @d.find_element(:class, "form__btn").click
+  @wait.until {/プロトタイプ編集/.match(@d.page_source) rescue false}
 
   if /プロトタイプ編集/.match(@d.page_source)
     @puts_num_array[5][4] = "[5-004] ◯：空の入力欄がある場合は、編集できずにその画面に留まること。"
@@ -551,14 +578,14 @@ def comment_prototype
     prototype_title_click_from_top(@prototype_title)
   end
 
-  # 【7-005】フォームを空のまま投稿しようとすると、投稿できずにその画面に留まること
+  # 【7-004】フォームを空のまま投稿しようとすると、投稿できずにその画面に留まること
   @d.find_element(:class, "form__btn").click
   @wait.until {@d.find_element(:class, "prototype__comments").displayed? rescue false}
 
   if @d.find_element(:class, "prototype__comments").displayed?
-    @puts_num_array[7][5] = "[7-005] ◯：フォームを空のまま投稿しようとすると、投稿できずにその画面に留まること。"
+    @puts_num_array[7][4] = "[7-004] ◯：フォームを空のまま投稿しようとすると、投稿できずにその画面に留まること。"
   else
-    @puts_num_array[7][5] = "[7-005] ×：フォームを空のまま投稿しても、他の画面に遷移してしまう"
+    @puts_num_array[7][4] = "[7-004] ×：フォームを空のまま投稿しても、他の画面に遷移してしまう"
     @d.get(@url)
     @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
     prototype_title_click_from_top(@prototype_title)
@@ -602,9 +629,9 @@ def show_user
   @wait.until {@d.find_element(:class, "user__wrapper").displayed? rescue false}
 
   if @d.find_element(:class, "user__wrapper").displayed?
-    @puts_num_array[8][1] = "[8-001] ◯：ログイン・ログアウトの状態に関わらず、トップ画面のユーザー名をクリックすると、ユーザーの詳細画面へ遷移すること。"
+    @flag_8_001 += 1
   else
-    @puts_num_array[8][1] = "[8-001] ×：ログイン・ログアウトの状態に関わらず、トップ画面のユーザー名をクリックしても、ユーザーの詳細画面へ遷移しない。"
+    @puts_num_array[8][1] = "[8-001] ×：ログイン状態で、トップ画面のユーザー名をクリックしても、ユーザーの詳細画面へ遷移しない。"
   end
 
   # Prototype詳細画面で検証
@@ -614,9 +641,13 @@ def show_user
   @wait.until {@d.find_element(:class, "user__wrapper").displayed? rescue false}
 
   if @d.find_element(:class, "user__wrapper").displayed?
-    @puts_num_array[8][1] = @puts_num_array[8][1] + "\n[8-001] ◯：ログイン・ログアウトの状態に関わらず、プロトタイプ詳細画面のユーザー名をクリックすると、ユーザーの詳細画面へ遷移すること。"
+    @flag_8_001 += 1
   else
-    @puts_num_array[8][1] = @puts_num_array[8][1] + "\n[8-001] ×：ログイン・ログアウトの状態に関わらず、プロトタイプ詳細画面のユーザー名をクリックしても、ユーザーの詳細画面へ遷移しない。"
+    @puts_num_array[8][1] = @puts_num_array[8][1] + "\n[8-001] ×：ログイン状態で、プロトタイプ詳細画面のユーザー名をクリックしても、ユーザーの詳細画面へ遷移しない。"
+  end
+
+  if @flag_8_001 += 2
+    @puts_num_array[8][1] = "[8-001] ◯：ログイン・ログアウトの状態に関わらず、トップ画面のユーザー名及びプロトタイプ詳細画面のユーザー名をクリックすると、ユーザーの詳細画面へ遷移すること。"
   end
 
   # ログイン・ログアウトの状態に関わらず、ユーザーの詳細画面にユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること
@@ -641,6 +672,50 @@ def logout_check
     @puts_num_array[1][16] = @puts_num_array[1][16] + "[1-016] ◯：ログアウト状態では、ヘッダーに「ログイン」のリンクが存在している。"
   else
     @puts_num_array[1][16] = @puts_num_array[1][16] + "[1-016] ×：ログアウト状態では、ヘッダーに「ログイン」のリンクが存在していない。"
+  end
+
+  # 【3-001】ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧可能か確認
+  if @d.find_element(:class, "card").displayed?
+    @flag_3_001 += 1
+  else
+    @puts_num_array[3][1] = @puts_num_array[3][1] + "[3-001] ×：ログアウトの状態では、プロトタイプ一覧が表示されていない。"
+  end
+
+  if @flag_3_001 == 2
+    @puts_num_array[3][1] = "[3-001] ◯：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること。"
+  end
+
+  # 【3-002】ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移すること
+  # 画像をクリックして、Prototype詳細画面に遷移するか確認
+  @d.find_element(:class,"card__img").click
+  @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
+
+  if @d.find_element(:class, "prototype__wrapper").displayed?
+    @flag_3_002 += 1
+  else
+    @puts_num_array[3][2] = @puts_num_array[3][2] + "×：ログアウト状態で、一覧表示されている画像をクリックしても、該当するプロトタイプの詳細画面へ遷移しない。\n"
+  end
+
+  # トップ画面へ戻る
+  @d.get(@url)
+  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+  # Prototypeのタイトルをクリックして、Prototype詳細画面に遷移するか確認
+  @d.find_element(:class,"card__title").click
+  @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
+
+  if @d.find_element(:class, "prototype__wrapper").displayed?
+    @flag_3_002 += 1
+  else
+    @puts_num_array[3][2] = @puts_num_array[3][2] + "×：ログアウト状態で、一覧表示されているプロトタイプ名をクリックしても、該当するプロトタイプの詳細画面へ遷移しない。\n"
+  end
+
+  # トップ画面へ戻る
+  @d.get(@url)
+  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+  if @flag_3_002 == 4
+    @puts_num_array[3][2] = "[3-002] ◯：ログイン・ログアウトの状態に関わらず、一覧表示されている画像をクリックすると、該当するプロトタイプの詳細画面へ遷移する。"
   end
 
   # 【9-001】ログアウト状態のユーザーは、プロトタイプ新規投稿/編集ページに遷移しようとすると、ログインページにリダイレクトされること
@@ -675,6 +750,7 @@ def logout_check
   # 【4-001】ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること
   @d.get(@url)
   prototype_title_click_from_top(@prototype_title)
+  @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
 
   if /編集/.match(@d.page_source)
     @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ×：ログアウト状態の投稿したユーザーでも、「編集」のリンクが存在している"
@@ -690,13 +766,11 @@ def logout_check
 
   if @flag_4_001 == 4
     @puts_num_array[4][1] = "[4-001] ◯：ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在している。"
-  else
-    @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ×：ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在していない。"
   end
 
   # 【7-001】コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること
   # 修正の必要あり
-  if @d.find_element(:id, "comment_text").displayed?
+  if /送信する/.match(@d.page_source)
     @puts_num_array[7][1] = @puts_num_array[7][1] + "\n[7-001] ×：ログアウト状態のユーザーでも、プロトタイプ詳細ページにコメント投稿欄が表示されている。"
   else
     @flag_7_001 += 1
@@ -704,7 +778,5 @@ def logout_check
 
   if @flag_7_001 == 2
     @puts_num_array[7][1] = "[7-001] ◯：コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること。"
-  else
-    @puts_num_array[7][1] = @puts_num_array[7][1] + "\n[7-001] ×：ログイン状態のユーザーへのみ、プロトタイプ詳細ページにコメント投稿欄が表示されていない。"
   end
 end
