@@ -14,15 +14,8 @@ def check_4
   begin
     check_flag = 0
 
-    # トップ画面でのPrototype情報を取得
-    @wait.until {@d.find_element(:class, "card").displayed?}
-    top_prototype_img = @d.find_element(:class,"card__img").attribute("src").to_s rescue "Error: class: card__img(画像)が見つかりません\n"
-    top_prototype_title = @d.find_element(:class,"card__title").text rescue "Error: class: card__title(Prototype名)が見つかりません\n"
-    top_prototype_catch_copy = @d.find_element(:class,"card__summary").text rescue "Error: class: card__summary(Prototypeのキャッチコピー)が見つかりません\n"
-    top_prototype_user_name = @d.find_element(:class,"card__user").text.delete("by ") rescue "Error: class: card__user(Prototypeの投稿者名)が見つかりません\n"
-
     # トップ画面の表示内容をチェック
-    if top_prototype_img&.include?(@prototype_image_name)
+    if /#{@prototype_image_name}/.match(@d.page_source)
       check_detail["チェック詳細"] << "◯：トップ画面にPrototypeの「画像」が表示されている。\n"
       check_flag += 1
     else
@@ -30,7 +23,7 @@ def check_4
       check_detail["チェック詳細"] << top_prototype_img
     end
 
-    if top_prototype_title == @prototype_title
+    if /#{@prototype_title}/.match(@d.page_source)
       check_detail["チェック詳細"] << "◯：トップ画面にPrototypeの「タイトル」が表示されている。\n"
       check_flag += 1
     else
@@ -38,7 +31,7 @@ def check_4
       check_detail["チェック詳細"] << top_prototype_title
     end
 
-    if top_prototype_catch_copy == @prototype_catch_copy
+    if /#{@prototype_catch_copy}/.match(@d.page_source)
       check_detail["チェック詳細"] << "◯：トップ画面にPrototypeの「キャッチコピー」が表示されている。\n"
       check_flag += 1
     else
@@ -46,7 +39,7 @@ def check_4
       check_detail["チェック詳細"] << top_prototype_catch_copy
     end
 
-    if top_prototype_user_name == @user_name
+    if /#{@user_name}/.match(@d.page_source)
       check_detail["チェック詳細"] << "◯：トップ画面にPrototypeの「投稿者名」が表示されている。\n"
       check_flag += 1
     else
@@ -58,7 +51,7 @@ def check_4
     prototype_title_click_from_top(@prototype_title)
 
     # Prototype詳細画面でのPrototype情報を取得
-    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
+    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
     show_prototype_img = @d.find_element(:class, "prototype__image").find_element(:tag_name, "img").attribute("src") rescue "Error: class: prototype__image(画像)が見つかりません\n"
     show_prototype_title = @d.find_element(:class, "prototype__hedding").text rescue "Error: class: prototype__hedding(Prototype名)が見つかりません\n"
     show_prototype_details = @d.find_elements(:class, "detail__message") rescue "Error: class: detail__message(Prototypeのキャッチコピーまたはコンセプト)が見つかりません\n"
@@ -107,7 +100,6 @@ def check_4
     end
 
     # Prototype編集画面へ遷移
-    @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
     @d.find_element(:partial_link_text, "編集").click
 
     # Prototype編集画面でのPrototype情報を取得
@@ -117,7 +109,7 @@ def check_4
     edit_prototype_concept = @d.find_element(:id, "prototype_concept").text rescue "Error: class: detail__message(Prototypeのコンセプト)が見つかりません\n"
 
     # Prototype編集画面の表示内容をチェック
-    if edit_prototype_title == @prototype_title
+    if /#{@prototype_title}/.match(@d.page_source)
       check_detail["チェック詳細"] << "◯：Prototype編集画面にPrototypeの「タイトル」が表示されている。\n"
       check_flag += 1
     else
@@ -163,7 +155,7 @@ def check_5
 
     # 画像をクリックして、Prototype詳細画面に遷移するか確認
     @d.find_element(:class,"card__img").click
-    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
+    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
 
     if @d.find_element(:class, "prototype__wrapper").displayed?
       check_detail["チェック詳細"] << "◯：ログイン・ログアウトの状態に関わらず、一覧表示されている画像をクリックすると、該当するプロトタイプの詳細画面へ遷移する。\n"
@@ -177,7 +169,7 @@ def check_5
 
     # Prototypeのタイトルをクリックして、Prototype詳細画面に遷移するか確認
     @d.find_element(:class,"card__title").click
-    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
+    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
 
     if @d.find_element(:class, "prototype__wrapper").displayed?
       check_detail["チェック詳細"] << "◯：ログイン・ログアウトの状態に関わらず、一覧表示されているプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移する。\n"
@@ -206,7 +198,7 @@ def check_8
     check_flag = 0
 
     # prototype詳細画面でのコメント情報を取得
-    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
+    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
     comment = @d.find_element(:class, "comments_list").text rescue "Error: class: comments_list(コメント)が見つかりません\n"
     comment_user = @d.find_element(:class, "comment_user").text rescue "Error: class: comment_user(コメント投稿者名)が見つかりません\n"
 

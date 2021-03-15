@@ -25,24 +25,23 @@ def main
   # Prototype詳細表示機能のチェック
   check_top_prototype_display
 
-  # Prototype編集機能のチェック
-  edit_prototype
+  # # Prototype編集機能のチェック
+  # edit_prototype
 
-  # Prototype削除機能のチェック
-  destroy_prototype
+  # # Prototype削除機能のチェック
+  # destroy_prototype
 
-  # コメント機能のチェック
-  comment_prototype
+  # # コメント機能のチェック
+  # comment_prototype
 
-  # ユーザー詳細機能のチェック
-  show_user
+  # # ユーザー詳細機能のチェック
+  # show_user
 
-  # ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされること
-  check_10
+  # # ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされること
+  # check_10
 
-  # ログアウト状態でのチェック
-  logout_check
-
+  # # ログアウト状態でのチェック
+  # logout_check
 end
 
 
@@ -393,7 +392,7 @@ def prototype_title_click_from_top(title)
   prototypes.each{|prototype|
     if prototype.text == title
       prototype.click
-      @wait.until {@d.find_element(:class, "prototype__wrapper").displayed?}
+      @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
       break
     end
   }
