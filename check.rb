@@ -9,7 +9,7 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 
 # ユーザー情報
 @user_email = "user1_#{randm_word}@co.jp"
-@user_name = "テストユーザー1"
+@user_name = "進撃のアーティスト"
 @user_profile = "aaa"
 @user_occupation = "bbb"
 @user_position = "ccc"
@@ -27,10 +27,10 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 @prototype_title = "誕生"
 @prototype_catch_copy = "色の迫力"
 @prototype_catch_copy2 = "自然の息吹"
-@prototype_concept = "自然と感情"
+@prototype_concept = "感情と色"
 @prototype_image_name = "sakura.jpeg"
 @prototype_image = "/Users/mizutaryousuke/projects/protospace_check/sakura.jpeg"
-@comment = "素晴らしい"
+@comment = "素晴らしい！"
 
 @d = Selenium::WebDriver.for :chrome
 @wait = Selenium::WebDriver::Wait.new(:timeout => 180000)
@@ -51,6 +51,7 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 #各チェックのフラグ変数
 @flag_1_012 = 0;
 @flag_1_015 = 0;
+@flag_1_017 = 0;
 @flag_3_001 = 0;
 @flag_3_002 = 0;
 @flag_4_001 = 0;

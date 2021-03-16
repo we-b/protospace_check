@@ -237,9 +237,8 @@ def login_user
   end
 
   if @flag_1_015 == 2
-    @puts_num_array[1][15] = "[1-015] ◯：ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在している。"
+    @puts_num_array[1][15] = "[1-015] ◯：ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在すること。"
   end
-
 
   # 【1-016】ログイン状態では、トップ画面に「こんにちは、〇〇さん」とユーザー名が表示されていること
   if /こんにちは/.match(@d.page_source) && @d.find_element(:link_text, "#{@user_name}さん").displayed?
@@ -295,7 +294,6 @@ def login_any_user(email, pass)
   # トップ画面に遷移
   @d.get(@url)
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
-
 end
 
 
@@ -399,8 +397,8 @@ def check_top_prototype_display
     @puts_num_array[3][1] = "[3-001] ×：ログイン状態では、プロトタイプ一覧を閲覧できない。"
   end
 
-  # プロトタイプ毎に、画像・プロトタイプ名・キャッチコピー・投稿者名の、4つの情報について表示できること/ログインのログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること
-  check_4
+  # 投稿した情報は、トップページに表示されること
+  check_1
 
   # 【3-002】ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移すること
   # 画像をクリックして、Prototype詳細画面に遷移するか確認
@@ -450,6 +448,9 @@ def edit_prototype
   # トップ画面にてPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移する
   prototype_title_click_from_top(@prototype_title)
 
+  # ログイン・ログアウトの状態に関わらず、プロダクトの情報（プロトタイプ名・投稿者・画像・ キャッチコピー・コンセプト）が表示されていること
+  check_2_login
+
   # 【4-001】ログイン状態の投稿したユーザーだけに、「編集」「削除」のリンクが存在すること
   if /編集/.match(@d.page_source)
     @flag_4_001 += 1
@@ -467,6 +468,9 @@ def edit_prototype
   @wait.until {@d.find_element(:partial_link_text, "編集").displayed?}
   @d.find_element(:partial_link_text, "編集").click
   @wait.until {/プロトタイプ編集/.match(@d.page_source) rescue false}
+
+  # プロトタイプ情報について、すでに登録されている情報は、編集画面を開いた時点で表示されること
+  check_3
 
   if /プロトタイプ編集/.match(@d.page_source)
     @puts_num_array[5][3] = "[5-003] ◯：ログイン状態のユーザーに限り、自身の投稿したプロトタイプの詳細ページから編集ボタンをクリックすると、編集ページへ遷移できること。"
@@ -686,15 +690,19 @@ def logout_check
 
   # 【1-016】ログアウト状態では、ヘッダーに「新規登録」「ログイン」のリンクが存在すること
   if @d.find_element(:link_text, "新規登録").displayed?
-    @puts_num_array[1][17] = "[1-017] ◯：ログアウト状態では、ヘッダーに「新規登録」のリンクが存在すること。"
+    @flag_1_017 += 1
   else
     @puts_num_array[1][17] = "[1-017] ×：ログアウト状態では、ヘッダーに「新規登録」のリンクが存在していない。"
   end
 
   if @d.find_element(:link_text, "ログイン").displayed?
-    @puts_num_array[1][17] = @puts_num_array[1][17] + "[1-017] ◯：ログアウト状態では、ヘッダーに「ログイン」のリンクが存在している。"
+    @flag_1_017 += 1
   else
     @puts_num_array[1][17] = @puts_num_array[1][17] + "[1-017] ×：ログアウト状態では、ヘッダーに「ログイン」のリンクが存在していない。"
+  end
+
+  if @flag_1_017 == 2
+    @puts_num_array[1][17] = "[1-017] ◯：ログアウト状態では、ヘッダーに「新規登録」「ログイン」のリンクが存在すること。"
   end
 
   # 【3-001】ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧可能か確認
@@ -774,6 +782,9 @@ def logout_check
   @d.get(@url)
   prototype_title_click_from_top(@prototype_title)
   @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
+
+  # ログアウト状態で、プロダクトの情報（プロトタイプ名・投稿者・画像・ キャッチコピー・コンセプト）が表示されていること
+  check_2_logout
 
   if /編集/.match(@d.page_source)
     @puts_num_array[4][1] = @puts_num_array[4][1] + "\n[4-001] ×：ログアウト状態の投稿したユーザーでも、「編集」のリンクが存在している"
