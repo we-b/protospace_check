@@ -345,54 +345,9 @@ def check_3
 end
 
 
-# ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移すること
-# 現時点ではログインの場合のみの実装
-def check_5
-  check_detail = {"チェック番号"=> 5, "チェック合否"=> "", "チェック内容"=> "ログイン・ログアウトの状態に関わらず、一覧表示されている画像およびプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移すること", "チェック詳細"=> ""}
-
-  begin
-    check_flag = 0
-
-    # 画像をクリックして、Prototype詳細画面に遷移するか確認
-    @d.find_element(:class,"card__img").click
-    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
-
-    if @d.find_element(:class, "prototype__wrapper").displayed?
-      check_detail["チェック詳細"] << "◯：ログイン・ログアウトの状態に関わらず、一覧表示されている画像をクリックすると、該当するプロトタイプの詳細画面へ遷移する。\n"
-      check_flag += 1
-    else
-      check_detail["チェック詳細"] << "×：ログイン・ログアウトの状態に関わらず、一覧表示されている画像をクリックしても、該当するプロトタイプの詳細画面へ遷移しない。\n"
-    end
-
-    # トップ画面へ戻る
-    @d.get(@url)
-
-    # Prototypeのタイトルをクリックして、Prototype詳細画面に遷移するか確認
-    @d.find_element(:class,"card__title").click
-    @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
-
-    if @d.find_element(:class, "prototype__wrapper").displayed?
-      check_detail["チェック詳細"] << "◯：ログイン・ログアウトの状態に関わらず、一覧表示されているプロトタイプ名をクリックすると、該当するプロトタイプの詳細画面へ遷移する。\n"
-      check_flag += 1
-    else
-      check_detail["チェック詳細"] << "×：ログイン・ログアウトの状態に関わらず、一覧表示されているプロトタイプ名をクリックしても、該当するプロトタイプの詳細画面へ遷移しない。\n"
-    end
-
-    check_detail["チェック合否"] = check_flag == 2 ? "◯" : "×"
-
-    # トップ画面へ戻る
-    @d.get(@url)
-
-  # エラー発生有無にかかわらず実行
-  ensure
-    @check_log.push(check_detail)
-  end
-end
-
-
 # コメントを投稿すると、投稿したコメントと投稿者名が、対象プロトタイプの詳細画面にのみ表示されること
-def check_8
-  check_detail = {"チェック番号"=> 8, "チェック合否"=> "", "チェック内容"=> "コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細画面にのみ表示されること", "チェック詳細"=> ""}
+def check_4
+  check_detail = {"チェック番号"=> 4, "チェック合否"=> "", "チェック内容"=> "コメントを投稿すると、投稿したコメントとその投稿者名が、対象プロトタイプの詳細画面にのみ表示されること", "チェック詳細"=> ""}
 
   begin
     check_flag = 0
@@ -426,87 +381,145 @@ def check_8
 end
 
 
-# ログイン・ログアウトの状態に関わらず、ユーザーの詳細画面にユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること
-def check_9
-  check_detail = {"チェック番号"=> 9, "チェック合否"=> "", "チェック内容"=> "ログイン・ログアウトの状態に関わらず、ユーザーの詳細画面にユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること", "チェック詳細"=> ""}
+# ログイン状態で、ユーザーの詳細画面にユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること
+def check_5_login
+  @check_5_detail = {"チェック番号"=> 5, "チェック合否"=> "", "チェック内容"=> "ログイン・ログアウトの状態に関わらず、ユーザーの詳細画面にユーザーの詳細情報（名前/プロフィール/所属/役職）と、そのユーザーが投稿したプロトタイプが表示されていること", "チェック詳細"=> ""}
+  @flag_check_5 = 0;
 
+  # ユーザー詳細画面でのユーザー情報を取得
+  user_details = @d.find_elements(:class, "table__col2") rescue "Error: [ログイン状態]class: table__col2(ユーザーの詳細情報)が見つかりません\n"
+
+  # ユーザー詳細画面の表示内容をチェック
+  if user_details.is_a?(String)
+    @check_5_detail["チェック詳細"] << user_details
+  else
+    user_detail_answers = { "名前" => @user_name, "プロフィール" => @user_profile, "所属" => @user_position, "役職" => @user_occupation }
+    user_details_text = user_details.map { |e| e.text }
+
+    user_detail_answers.each{|k, v|
+      if user_details_text.include?(v)
+        @check_5_detail["チェック詳細"] << "◯：[ログイン状態]ユーザー詳細画面にユーザーの「#{k}」が表示されている。\n"
+        @flag_check_5 += 1
+      else
+        @check_5_detail["チェック詳細"] << "×：[ログイン状態]ユーザー詳細画面にユーザーの「#{k}」情報が表示されていない。\n"
+      end
+    }
+  end
+
+  # ユーザー詳細画面でのPrototype情報を取得
+  user_prototype_img = @d.find_element(:class, "card__img").attribute("src") rescue "Error: [ログイン状態]class: card__img(画像)が見つかりません\n"
+  user_prototype_title = @d.find_element(:class, "card__title").text rescue "Error: [ログイン状態]class: card__title(Prototype名)が見つかりません\n"
+  user_prototype_catch_copy = @d.find_element(:class, "card__summary").text rescue "Error: [ログイン状態]class: card__summary(Prototypeのキャッチコピー)が見つかりません\n"
+  user_prototype_user_name = @d.find_element(:class, "card__user").text.delete("by ") rescue "Error: [ログイン状態]class: card__user(Prototypeの投稿者名)が見つかりません\n"
+
+  # ユーザー詳細画面でのPrototype表示内容をチェック
+  if user_prototype_img.include?(@prototype_image_name)
+    @check_5_detail["チェック詳細"] << "◯：[ログイン状態]ユーザー詳細画面にPrototypeの「画像」が表示されている。\n"
+    @flag_check_5 += 1
+  else
+    @check_5_detail["チェック詳細"] << "×：[ログイン状態]ユーザー詳細画面にPrototypeの「画像」が表示されていない。\n"
+    @check_5_detail["チェック詳細"] << user_prototype_img
+  end
+
+  if user_prototype_title == @prototype_title
+    @check_5_detail["チェック詳細"] << "◯：[ログイン状態]ユーザー詳細画面にPrototypeの「タイトル」が表示されている。\n"
+    @flag_check_5 += 1
+  else
+    @check_5_detail["チェック詳細"] << "×：[ログイン状態]ユーザー詳細画面にPrototypeの「タイトル」が表示されていない。\n"
+    @check_5_detail["チェック詳細"] << user_prototype_title
+  end
+
+  if user_prototype_catch_copy == @prototype_catch_copy
+    @check_5_detail["チェック詳細"] << "◯：[ログイン状態]ユーザー詳細画面にPrototypeの「タイトル」が表示されている。\n"
+    @flag_check_5 += 1
+  else
+    @check_5_detail["チェック詳細"] << "×：[ログイン状態]ユーザー詳細画面にPrototypeの「タイトル」が表示されていない。\n"
+    @check_5_detail["チェック詳細"] << user_prototype_catch_copy
+  end
+
+  if user_prototype_user_name == @user_name
+    @check_5_detail["チェック詳細"] << "◯：[ログイン状態]ユーザー詳細画面にPrototypeの「投稿者名」が表示されている。\n"
+    @flag_check_5 += 1
+  else
+    @check_5_detail["チェック詳細"] << "×：[ログイン状態]ユーザー詳細画面にPrototypeの「投稿者名」が表示されていない。\n"
+    @check_5_detail["チェック詳細"] << user_prototype_user_name
+  end
+end
+
+
+# ログアウト状態で、ユーザーの詳細画面にユーザーの詳細情報（名前・プロフィール・所属・役職）と、そのユーザーが投稿したプロトタイプが表示されていること
+def check_5_logout
   begin
-    check_flag = 0
-
     # ユーザー詳細画面でのユーザー情報を取得
-    user_details = @d.find_elements(:class, "table__col2") rescue "Error: class: table__col2(ユーザーの詳細情報)が見つかりません\n"
+    user_details = @d.find_elements(:class, "table__col2") rescue "Error: [ログアウト状態]class: table__col2(ユーザーの詳細情報)が見つかりません\n"
 
     # ユーザー詳細画面の表示内容をチェック
     if user_details.is_a?(String)
-      check_detail["チェック詳細"] << user_details
+      @check_5_detail["チェック詳細"] << user_details
     else
       user_detail_answers = { "名前" => @user_name, "プロフィール" => @user_profile, "所属" => @user_position, "役職" => @user_occupation }
       user_details_text = user_details.map { |e| e.text }
 
       user_detail_answers.each{|k, v|
         if user_details_text.include?(v)
-          check_detail["チェック詳細"] << "◯：ユーザー詳細画面にユーザーの「#{k}」が表示されている。\n"
-          check_flag += 1
+          @check_5_detail["チェック詳細"] << "◯：[ログアウト状態]ユーザー詳細画面にユーザーの「#{k}」が表示されている。\n"
+          @flag_check_5 += 1
         else
-          check_detail["チェック詳細"] << "×：ユーザー詳細画面にユーザーの「#{k}」情報が表示されていない。\n"
+          @check_5_detail["チェック詳細"] << "×：[ログアウト状態]ユーザー詳細画面にユーザーの「#{k}」情報が表示されていない。\n"
         end
       }
     end
 
     # ユーザー詳細画面でのPrototype情報を取得
-    user_prototype_img = @d.find_element(:class, "card__img").attribute("src") rescue "Error: class: card__img(画像)が見つかりません\n"
-    user_prototype_title = @d.find_element(:class, "card__title").text rescue "Error: class: card__title(Prototype名)が見つかりません\n"
-    user_prototype_catch_copy = @d.find_element(:class, "card__summary").text rescue "Error: class: card__summary(Prototypeのキャッチコピー)が見つかりません\n"
-    user_prototype_user_name = @d.find_element(:class, "card__user").text.delete("by ") rescue "Error: class: card__user(Prototypeの投稿者名)が見つかりません\n"
+    user_prototype_img = @d.find_element(:class, "card__img").attribute("src") rescue "Error: [ログアウト状態]class: card__img(画像)が見つかりません\n"
+    user_prototype_title = @d.find_element(:class, "card__title").text rescue "Error: [ログアウト状態]class: card__title(Prototype名)が見つかりません\n"
+    user_prototype_catch_copy = @d.find_element(:class, "card__summary").text rescue "Error: [ログアウト状態]class: card__summary(Prototypeのキャッチコピー)が見つかりません\n"
+    user_prototype_user_name = @d.find_element(:class, "card__user").text.delete("by ") rescue "Error: [ログアウト状態]class: card__user(Prototypeの投稿者名)が見つかりません\n"
 
     # ユーザー詳細画面でのPrototype表示内容をチェック
     if user_prototype_img.include?(@prototype_image_name)
-      check_detail["チェック詳細"] << "◯：ユーザー詳細画面にPrototypeの「画像」が表示されている。\n"
-      check_flag += 1
+      @check_5_detail["チェック詳細"] << "◯：[ログアウト状態]ユーザー詳細画面にPrototypeの「画像」が表示されている。\n"
+      @flag_check_5 += 1
     else
-      check_detail["チェック詳細"] << "×：ユーザー詳細画面にPrototypeの「画像」が表示されていない。\n"
-      check_detail["チェック詳細"] << user_prototype_img
+      @check_5_detail["チェック詳細"] << "×：[ログアウト状態]ユーザー詳細画面にPrototypeの「画像」が表示されていない。\n"
+      @check_5_detail["チェック詳細"] << user_prototype_img
     end
 
     if user_prototype_title == @prototype_title
-      check_detail["チェック詳細"] << "◯：ユーザー詳細画面にPrototypeの「タイトル」が表示されている。\n"
-      check_flag += 1
+      @check_5_detail["チェック詳細"] << "◯：[ログアウト状態]ユーザー詳細画面にPrototypeの「タイトル」が表示されている。\n"
+      @flag_check_5 += 1
     else
-      check_detail["チェック詳細"] << "×：ユーザー詳細画面にPrototypeの「タイトル」が表示されていない。\n"
-      check_detail["チェック詳細"] << user_prototype_title
+      @check_5_detail["チェック詳細"] << "×：[ログアウト状態]ユーザー詳細画面にPrototypeの「タイトル」が表示されていない。\n"
+      @check_5_detail["チェック詳細"] << user_prototype_title
     end
 
     if user_prototype_catch_copy == @prototype_catch_copy
-      check_detail["チェック詳細"] << "◯：ユーザー詳細画面にPrototypeの「タイトル」が表示されている。\n"
-      check_flag += 1
+      @check_5_detail["チェック詳細"] << "◯：[ログアウト状態]ユーザー詳細画面にPrototypeの「タイトル」が表示されている。\n"
+      @flag_check_5 += 1
     else
-      check_detail["チェック詳細"] << "×：ユーザー詳細画面にPrototypeの「タイトル」が表示されていない。\n"
-      check_detail["チェック詳細"] << user_prototype_catch_copy
+      @check_5_detail["チェック詳細"] << "×：[ログアウト状態]ユーザー詳細画面にPrototypeの「タイトル」が表示されていない。\n"
+      @check_5_detail["チェック詳細"] << user_prototype_catch_copy
     end
 
     if user_prototype_user_name == @user_name
-      check_detail["チェック詳細"] << "◯：ユーザー詳細画面にPrototypeの「投稿者名」が表示されている。\n"
-      check_flag += 1
+      @check_5_detail["チェック詳細"] << "◯：[ログアウト状態]ユーザー詳細画面にPrototypeの「投稿者名」が表示されている。\n"
+      @flag_check_5 += 1
     else
-      check_detail["チェック詳細"] << "×：ユーザー詳細画面にPrototypeの「投稿者名」が表示されていない。\n"
-      check_detail["チェック詳細"] << user_prototype_user_name
+      @check_5_detail["チェック詳細"] << "×：[ログアウト状態]ユーザー詳細画面にPrototypeの「投稿者名」が表示されていない。\n"
+      @check_5_detail["チェック詳細"] << user_prototype_user_name
     end
 
-    check_detail["チェック合否"] = check_flag == 8 ? "◯" : "×"
+    @check_5_detail["チェック合否"] = @flag_check_5 == 16 ? "◯" : "×"
 
-    # トップ画面へ戻る
-    @d.get(@url)
-
-  # エラー発生有無にかかわらず実行
   ensure
-    @check_log.push(check_detail)
+    @check_log.push(@check_5_detail)
   end
 end
 
 
 # ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされること
-def check_10
-  check_detail = {"チェック番号"=> 10, "チェック合否"=> "", "チェック内容"=> "ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされること", "チェック詳細"=> ""}
+def check_6
+  check_detail = {"チェック番号"=> 6, "チェック合否"=> "", "チェック内容"=> "ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされること", "チェック詳細"=> ""}
   check_flag = 0
 
   begin

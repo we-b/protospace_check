@@ -24,7 +24,7 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 @password = "aaa111"
 
 # Prototype投稿情報
-@prototype_title = "誕生"
+@prototype_title = "荘厳"
 @prototype_catch_copy = "色の迫力"
 @prototype_catch_copy2 = "自然の息吹"
 @prototype_concept = "感情と色"
