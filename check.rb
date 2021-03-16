@@ -4,16 +4,8 @@ require 'securerandom'
 require './main'
 require './check_list'
 
-# 1つ目のウィンドウのID
-# @window1_id = @d.window_handle
-# # 2つ目のウィンドウを開く
-# @d.execute_script( "window.open()" )
-# # 2つ目のウィンドウのIDを取得
-# @window2_id = @d.window_handles.last
-# @d.switch_to.window(@window1_id)
-
 #テスト登録用emailのランダム文字列
-randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
+randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 
 # ユーザー情報
 @user_email = "user1_#{randm_word}@co.jp"
@@ -32,7 +24,7 @@ randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
 @password = "aaa111"
 
 # Prototype投稿情報
-@prototype_title = "Nature"
+@prototype_title = "誕生"
 @prototype_catch_copy = "色の迫力"
 @prototype_catch_copy2 = "自然の息吹"
 @prototype_concept = "自然と感情"
@@ -57,6 +49,8 @@ randm_word = SecureRandom.hex(10) #=> "4a01bbd139f5e94bd249"
 @puts_num_array = Array.new(10).map{Array.new(30, false)}
 
 #各チェックのフラグ変数
+@flag_1_012 = 0;
+@flag_1_015 = 0;
 @flag_3_001 = 0;
 @flag_3_002 = 0;
 @flag_4_001 = 0;

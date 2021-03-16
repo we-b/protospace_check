@@ -1,5 +1,133 @@
-# パスワードは6文字以上であること
-# check_1
+# 【1-003】メールアドレスは@を含む必要があること
+def check_1_003
+  # ＠を含まない値で確認
+  randm_word = SecureRandom.hex(8)
+  @check_email = "user_#{randm_word}co.jp"
+
+  input_sign_up(@check_email, @password, @user_name, @user_profile, @user_occupation, @user_position)
+  @d.find_element(:class,"form__btn").click
+  @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+
+  if /ユーザー新規登録/.match(@d.page_source)
+    @puts_num_array[1][3] = "[1-003] ◯：メールアドレスは@を含む必要がある。"
+  elsif @d.find_element(:class, "card__wrapper").displayed?
+    @puts_num_array[1][3] = "[1-003] ×：メールアドレスが@を含なくても新規登録できてしまう。"
+
+    # 登録できてしまった場合、ログアウトしておく
+    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+    if display_flag
+      @d.find_element(:link_text, "ログアウト").click
+      @d.get(@url)
+    end
+
+    @d.find_element(:link_text, "新規登録").click
+    @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+  end
+
+  # 新規登録フォームの入力項目をクリア
+  clear_sign_up
+end
+
+
+# 【1-005】パスワードは6文字以上であること
+def check_1_005
+  # 5文字の値で確認
+  @check_password = "aaa11"
+
+  input_sign_up(@user_email, @check_password, @user_name, @user_profile, @user_occupation, @user_position)
+  @d.find_element(:class,"form__btn").click
+  @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+
+  if /ユーザー新規登録/.match(@d.page_source)
+    @puts_num_array[1][5] = "[1-005] ◯：パスワードは6文字以上であること。"
+  elsif @d.find_element(:class, "card__wrapper").displayed?
+    @puts_num_array[1][5] = "[1-005] ×：パスワードが5文字以下でも新規登録できてしまう。"
+
+    # 登録できてしまった場合、ログアウトしておく
+    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+    if display_flag
+      @d.find_element(:link_text, "ログアウト").click
+      @d.get(@url)
+    end
+
+    @d.find_element(:link_text, "新規登録").click
+    @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+  end
+
+  # 新規登録フォームの入力項目をクリア
+  clear_sign_up
+end
+
+
+# 【1-006】パスワードは確認用を含めて2回入力する
+def check_1_006
+  # 「パスワード再入力」の項目は未入力で確認
+  @wait.until {@d.find_element(:id, 'user_email').displayed?}
+  @d.find_element(:id, 'user_email').send_keys(@user_email)
+  @wait.until {@d.find_element(:id, 'user_password').displayed?}
+  @d.find_element(:id, 'user_password').send_keys(@password)
+  @wait.until {@d.find_element(:id, 'user_name').displayed?}
+  @d.find_element(:id, 'user_name').send_keys(@user_name)
+  @wait.until {@d.find_element(:id, 'user_profile').displayed?}
+  @d.find_element(:id, 'user_profile').send_keys(@user_profile)
+  @wait.until {@d.find_element(:id, 'user_occupation').displayed?}
+  @d.find_element(:id, 'user_occupation').send_keys(@user_occupation)
+  @wait.until {@d.find_element(:id, 'user_position').displayed?}
+  @d.find_element(:id, 'user_position').send_keys(@user_position)
+
+  @d.find_element(:class,"form__btn").click
+  @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+
+  if /ユーザー新規登録/.match(@d.page_source)
+    @puts_num_array[1][6] = "[1-006] ◯：パスワードは確認用を含めて2回入力すること。"
+  elsif @d.find_element(:class, "card__wrapper").displayed?
+    @puts_num_array[1][6] = "[1-006] ×：「パスワード再入力」の項目が未入力でも新規登録できてしまう。"
+
+    # 登録できてしまった場合、ログアウトしておく
+    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+    if display_flag
+      @d.find_element(:link_text, "ログアウト").click
+      @d.get(@url)
+    end
+
+    @d.find_element(:link_text, "新規登録").click
+    @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+  end
+
+  # 新規登録フォームの入力項目をクリア
+  clear_sign_up
+end
+
+
+# 【1-008】プロフィールが必須であること
+def check_1_008
+  # 新規登録に必要な項目入力を行うメソッド
+  input_sign_up(@user_email, @password, @user_name, @user_profile, @user_occupation, @user_position)
+
+  @wait.until {@d.find_element(:id, 'user_profile').displayed?}
+  @d.find_element(:id, 'user_profile').clear
+  @d.find_element(:class,"form__btn").click
+  @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+
+  if /ユーザー新規登録/.match(@d.page_source)
+    @puts_num_array[1][8] = "[1-008] ◯：プロフィールが必須であること。"
+  elsif @d.find_element(:class, "card__wrapper").displayed?
+    @puts_num_array[1][8] = "[1-008] ×：プロフィール未入力でも登録できてしまう。"
+
+    # 登録できてしまった場合、ログアウトしておく
+    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+    if display_flag
+      @d.find_element(:link_text, "ログアウト").click
+      @d.get(@url)
+    end
+
+    @d.find_element(:link_text, "新規登録").click
+    @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+  end
+
+  # 新規登録フォームの入力項目をクリア
+  clear_sign_up
+end
 
 
 # ログインのログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること
@@ -326,38 +454,5 @@ def check_10
     check_detail["チェック合否"] = check_flag == 1 ? "◯" : "×"
   ensure
     @check_log.push(check_detail)
-  end
-end
-
-
-# ユーザー新規登録画面でのエラーハンドリングログを取得
-def check_19_1
-  #全項目未入力で「登録する」ボタンをクリック
-  @d.find_element(:class, "form__btn").click
-  @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
-
-  #念の為登録できてしまわないかチェック
-  if /ユーザー新規登録/.match(@d.page_source)
-    @error_log_hash["新規登録"] = "◯：【ユーザー新規登録画面】にて全項目未入力の状態で登録ボタンを押すと、登録が完了せずエラーメッセージが出力される\n\n"
-    @error_log_hash["新規登録"] << "↓↓↓ エラーログ全文(出力された内容) ↓↓↓\n"
-  else
-    #登録できてしまう場合
-    @error_log_hash["新規登録"] = "×：【ユーザー新規登録画面】にて全項目未入力の状態で登録ボタンを押すと、リダイレクトせず登録画面以外の画面へ遷移してしまう(登録できてしまっている可能性あり)\n"
-
-    #トップ画面へ
-    @d.get(@url)
-    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
-
-    #ログイン状態であればログアウトしておく
-    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
-    if display_flag
-      @d.find_element(:link_text, "ログアウト").click
-      @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
-      @d.get(@url)
-    end
-
-    #再度新規登録画面へ
-    @d.find_element(:link_text, "新規登録").click
-    @wait.until {@d.find_element(:text, "ユーザー新規登録").displayed? rescue false}
   end
 end

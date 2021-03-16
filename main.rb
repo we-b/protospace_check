@@ -4,8 +4,8 @@ def main
   @url = "https://protospace2020.herokuapp.com"
   @d.get(@url)
 
-  # 「プロフィール」未入力でユーザー新規登録
-  sign_up_without_profile
+  # ユーザー管理機能のチェック
+  sign_up_check
 
   # 必須項目を入力して再登録
   sign_up_retry
@@ -45,8 +45,8 @@ def main
 end
 
 
-# 「プロフィール」未入力でユーザー新規登録
-def sign_up_without_profile
+# ユーザー管理機能のチェック
+def sign_up_check
   # ログイン状態であればログアウトしておく
   display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
   if display_flag
@@ -55,18 +55,46 @@ def sign_up_without_profile
     @d.get(@url)
   end
 
+  #全項目未入力で「登録する」ボタンをクリック
   @d.find_element(:link_text, "新規登録").click
-  @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+  @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
 
-  # ユーザー新規登録画面でのエラーハンドリングログを取得
-  check_19_1
+  #念の為登録できてしまわないかチェック
+  if /ユーザー新規登録/.match(@d.page_source)
+    @error_log_hash["新規登録"] = "◯：【ユーザー新規登録画面】にて全項目未入力の状態で登録ボタンを押すと、新規登録できない。\n\n"
+    @flag_1_012 += 1
+  else
+    @error_log_hash["新規登録"] = "×：【ユーザー新規登録画面】にて全項目未入力の状態で登録ボタンを押すと、リダイレクトせず登録画面以外の画面へ遷移してしまう(登録できてしまう可能性あり)\n"
+    @puts_num_array[1][12] = "[1-012] ×：フォームに適切な値が入力されていない状態で、「新規登録」を押下してもそのページに留まらない。"
 
-  # 新規登録に必要な項目入力を行うメソッド
-  input_sign_up(@user_email, @password, @user_name, @user_profile, @user_occupation, @user_position)
+    #トップ画面へ
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
-  @wait.until {@d.find_element(:id, 'user_profile').displayed?}
-  @d.find_element(:id, 'user_profile').clear
-  @d.find_element(:class,"form__btn").click
+    #ログイン状態であればログアウトしておく
+    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+    if display_flag
+      @d.find_element(:link_text, "ログアウト").click
+      @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+      @d.get(@url)
+    end
+
+    #再度新規登録画面へ
+    @d.find_element(:link_text, "新規登録").click
+    @wait.until {@d.find_element(:text, "ユーザー新規登録").displayed? rescue false}
+  end
+
+  # 【1-003】メールアドレスは@を含む必要があること
+  check_1_003
+
+  # 【1-005】パスワードは6文字以上であること
+  check_1_005
+
+  # 【1-006】パスワードは確認用を含めて2回入力する
+  check_1_006
+
+  # 【1-008】プロフィールが必須であること
+  check_1_008
 end
 
 
@@ -110,34 +138,6 @@ end
 
 # まだ登録が完了していない場合、再度登録
 def sign_up_retry
-  @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
-
-  if /ユーザー新規登録/.match(@d.page_source)
-    @puts_num_array[1][10] = "[1-010] ◯"  #：必須項目が1つでも欠けている場合は、ユーザー登録ができない"
-  elsif @d.find_element(:class, "card__wrapper").displayed?
-    @puts_num_array[1][7] = "[1-007] ×：プロフィール未入力でも登録できてしまう。またはトップ画面に遷移してしまう"  #:プロフィールが必須であること"
-    @puts_num_array[1][10] = "[1-010] ×：必須項目が一つでも欠けている状態でも登録できてしまう。"  #：必須項目が一つでも欠けている場合は、ユーザー登録ができない"
-
-    # 登録できてしまった場合、ログアウトしておく
-    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
-    if display_flag
-      @d.find_element(:link_text, "ログアウト").click
-      @d.get(@url)
-    end
-
-    @d.find_element(:link_text, "新規登録").click
-    @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
-
-    # 登録できてしまったアカウントと異なる情報に更新しておく = 再登録&再ログインできなくなってしまうため
-    randm_word = SecureRandom.hex(5)
-    @user_email = "user1_#{randm_word}@co.jp"
-
-    @puts_num_array[0].push("\n【補足情報】ユーザー新規登録テストにてユーザーの情報が更新されたため、更新されたユーザー情報を出力します(手動でのログイン時に使用)")
-    @puts_num_array[0].push("パスワード: #{@password}")
-    @puts_num_array[0].push("ユーザー名: 未入力\nemail: #{@user_email}\n")
-  end
-
-  # 再度登録
   # 最初に新規登録フォームの入力項目をクリア
   clear_sign_up
 
@@ -148,21 +148,18 @@ def sign_up_retry
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if @d.find_element(:class, "card__wrapper").displayed?
-    @puts_num_array[1][1] = "[1-001] ◯：メールアドレスが必須である"
-    @puts_num_array[1][2] = "[1-002] ◯：メールアドレスは一意性である"  #これはまだ立証できない
-    @puts_num_array[1][3] = "[1-003] ◯：メールアドレスは@を含む必要がある" #これはまだ立証できない
-    @puts_num_array[1][4] = "[1-004] ◯：パスワードが必須である"
-    @puts_num_array[1][5] = "[1-005] ◯：パスワードは確認用を含めて2回入力する" #これはまだ立証できない
-    @puts_num_array[1][6] = "[1-006] ◯：ユーザー名が必須である" #これはまだ立証できない
-    @puts_num_array[1][7] = "[1-007] ◯：プロフィールが必須である"
-    @puts_num_array[1][8] = "[1-008] ◯：所属が必須である" #これはまだ立証できない
-    @puts_num_array[1][9] = "[1-009] ◯：役職が必須である"  #これはまだ立証できない
-    @puts_num_array[1][10] = "[1-010] ◯：必須項目に適切な値を入力すると、ユーザーの新規登録ができる"
+    @puts_num_array[1][1] = "[1-001] ◯：メールアドレスが必須であること。"
+    @puts_num_array[1][2] = "[1-002] ◯：メールアドレスは一意性であること。"
+    @puts_num_array[1][4] = "[1-004] ◯：パスワードが必須であること。"
+    @puts_num_array[1][7] = "[1-007] ◯：ユーザー名が必須であること。"
+    @puts_num_array[1][9] = "[1-009] ◯：所属が必須であること。"
+    @puts_num_array[1][10] = "[1-010] ◯：役職が必須であること。"
+    @puts_num_array[1][11] = "[1-011] ◯：必須項目に適切な値を入力すると、ユーザーの新規登録ができること。"
   elsif /ユーザー新規登録/.match(@d.page_source)
-    @puts_num_array[1][10] = "[1-010] ×：必須項目を入力してもユーザー登録ができない"
-    @puts_num_array[0].push("ユーザーの新規登録ができません。ユーザー登録できない場合、以降の自動チェックにて不備が発生するため自動チェック処理を終了します")
-    @puts_num_array[0].push("手動でのアプリチェックを行ってください")
-    raise "ユーザー登録バリデーションにて不備あり"
+    @puts_num_array[1][11] = "[1-011] ×：必須項目を入力してもユーザー登録ができない。"
+    @puts_num_array[0].push("ユーザーの新規登録ができません。ユーザー登録できない場合、以降の自動チェックにて不備が発生するため自動チェック処理を終了します。")
+    @puts_num_array[0].push("手動でのアプリチェックを行ってください。")
+    raise "ユーザー登録バリデーションにて不備あり。"
   end
 end
 
@@ -173,12 +170,12 @@ def logout_from_the_topMenu
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if @d.find_element(:class, "card__wrapper").displayed?
-    @puts_num_array[1][13] = "[1-013] ◯：トップ画面から、ログアウトができること"
+    @puts_num_array[1][14] = "[1-014] ◯：トップ画面から、ログアウトができること。"
   else
-    @puts_num_array[1][13] = "[1-013] ×：トップ画面から、ログアウトができない"
-    @puts_num_array[0].push("トップ画面から、ログアウトができません。この場合、以降の自動チェックにて不備が発生するため自動チェック処理を終了します")
-    @puts_num_array[0].push("手動でのアプリチェックを行ってください")
-    raise "ユーザーのログイン/ログアウトにて不備あり"
+    @puts_num_array[1][14] = "[1-014] ×：トップ画面から、ログアウトができない。"
+    @puts_num_array[0].push("トップ画面から、ログアウトができません。この場合、以降の自動チェックにて不備が発生するため自動チェック処理を終了します。")
+    @puts_num_array[0].push("手動でのアプリチェックを行ってください。")
+    raise "ユーザーのログイン/ログアウトにて不備あり。"
   end
 end
 
@@ -187,6 +184,27 @@ end
 def login_user
   @wait.until {@d.find_element(:link_text, "ログイン").displayed?}
   @d.find_element(:link_text, "ログイン").click
+
+  #全項目未入力で「ログイン」ボタンをクリック
+  @wait.until {@d.find_element(:class, "form__btn").displayed?}
+  @d.find_element(:class, "form__btn").click
+
+  if /ユーザーログイン/.match(@d.page_source)
+    @error_log_hash["ログイン"] = "◯：【ユーザーログイン画面】にて全項目未入力の状態で登録ボタンを押すと、ログインできない。\n\n"
+    @flag_1_012 += 1
+  else
+    @error_log_hash["ログイン"] = "×：【ユーザー新規登録画面】にて全項目未入力の状態で登録ボタンを押すと、リダイレクトせず登録画面以外の画面へ遷移してしまう(登録できてしまう可能性あり)\n"
+    @puts_num_array[1][12] = "[1-012] ×：フォームに適切な値が入力されていない状態で、「ログイン」を押下してもそのページに留まらない。"
+
+    #再度ログイン画面へ
+    @d.get(@url)
+    @wait.until {@d.find_element(:link_text, "ログイン").displayed?}
+    @d.find_element(:link_text, "ログイン").click
+  end
+
+  if @flag_1_012 == 2
+    @puts_num_array[1][12] = "[1-012] ◯：フォームに適切な値が入力されていない状態では、新規登録/ログインはできず、そのページに留まること。"
+  end
 
   @wait.until {@d.find_element(:id, 'user_email').displayed?}
   @d.find_element(:id, 'user_email').send_keys(@user_email)
@@ -197,32 +215,37 @@ def login_user
   @d.find_element(:class, "form__btn").click
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
-  # 【1-012】必要な情報を入力すると、ログインができること
+  # 【1-013】必要な情報を入力すると、ログインができること
   if @d.find_element(:class, "card__wrapper").displayed?
-    @puts_num_array[1][12] = "[1-012] ◯：必要な情報を入力すると、ログインができること"
+    @puts_num_array[1][13] = "[1-013] ◯：必要な情報を入力すると、ログインができること。"
   else
-    @puts_num_array[1][12] = "[1-012] ×：ログインが出来ません。もしくはログイン後にトップ画面へ遷移しません。"
+    @puts_num_array[1][13] = "[1-013] ×：ログインが出来ません。もしくはログイン後にトップ画面へ遷移しません。"
     @d.get(@url)
   end
 
-  # 【1-014】ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在すること
+  # 【1-015】ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在すること
   if @d.find_element(:link_text, "ログアウト").displayed?
-    @puts_num_array[1][14] = "[1-014] ◯：ログイン状態では、ヘッダーに「ログアウト」のリンクが存在している。"
+    @flag_1_015 += 1
   else
-    @puts_num_array[1][14] = "[1-014] ×：ログイン状態では、ヘッダーに「ログアウト」のリンクが存在していない。"
+    @puts_num_array[1][15] = "[1-015] ×：ログイン状態では、ヘッダーに「ログアウト」のリンクが存在していない。"
   end
 
   if @d.find_element(:link_text, "New Proto").displayed?
-    @puts_num_array[1][14] = @puts_num_array[1][14] + "[1-014] ◯：ログイン状態では、ヘッダーに「New Proto」のリンクが存在している。"
+    @flag_1_015 += 1
   else
-    @puts_num_array[1][14] = @puts_num_array[1][14] + "[1-014] ×：ログイン状態では、ヘッダーに「New Proto」のリンクが存在していない。"
+    @puts_num_array[1][15] = @puts_num_array[1][15] + "\n[1-015] ×：ログイン状態では、ヘッダーに「New Proto」のリンクが存在していない。"
   end
 
-  # 【1-015】ログイン状態では、トップ画面に「こんにちは、〇〇さん」とユーザー名が表示されていること
+  if @flag_1_015 == 2
+    @puts_num_array[1][15] = "[1-015] ◯：ログイン状態では、ヘッダーに「ログアウト」「New Proto」のリンクが存在している。"
+  end
+
+
+  # 【1-016】ログイン状態では、トップ画面に「こんにちは、〇〇さん」とユーザー名が表示されていること
   if /こんにちは/.match(@d.page_source) && @d.find_element(:link_text, "#{@user_name}さん").displayed?
-    @puts_num_array[1][15] = "[1-015] ◯：ログイン状態では、トップ画面に「こんにちは、〇〇さん」とユーザー名が表示されている。"
+    @puts_num_array[1][16] = "[1-016] ◯：ログイン状態では、トップ画面に「こんにちは、〇〇さん」とユーザー名が表示されている。"
   else
-    @puts_num_array[1][15] = "[1-015] ×：ログイン状態では、トップ画面に「こんにちは、〇〇さん」とユーザー名が表示されていない。"
+    @puts_num_array[1][16] = "[1-016] ×：ログイン状態では、トップ画面に「こんにちは、〇〇さん」とユーザー名が表示されていない。"
   end
 end
 
@@ -663,15 +686,15 @@ def logout_check
 
   # 【1-016】ログアウト状態では、ヘッダーに「新規登録」「ログイン」のリンクが存在すること
   if @d.find_element(:link_text, "新規登録").displayed?
-    @puts_num_array[1][16] = "[1-016] ◯：ログアウト状態では、ヘッダーに「新規登録」のリンクが存在すること。"
+    @puts_num_array[1][17] = "[1-017] ◯：ログアウト状態では、ヘッダーに「新規登録」のリンクが存在すること。"
   else
-    @puts_num_array[1][16] = "[1-016] ×：ログアウト状態では、ヘッダーに「新規登録」のリンクが存在していない。"
+    @puts_num_array[1][17] = "[1-017] ×：ログアウト状態では、ヘッダーに「新規登録」のリンクが存在していない。"
   end
 
   if @d.find_element(:link_text, "ログイン").displayed?
-    @puts_num_array[1][16] = @puts_num_array[1][16] + "[1-016] ◯：ログアウト状態では、ヘッダーに「ログイン」のリンクが存在している。"
+    @puts_num_array[1][17] = @puts_num_array[1][17] + "[1-017] ◯：ログアウト状態では、ヘッダーに「ログイン」のリンクが存在している。"
   else
-    @puts_num_array[1][16] = @puts_num_array[1][16] + "[1-016] ×：ログアウト状態では、ヘッダーに「ログイン」のリンクが存在していない。"
+    @puts_num_array[1][17] = @puts_num_array[1][17] + "[1-017] ×：ログアウト状態では、ヘッダーに「ログイン」のリンクが存在していない。"
   end
 
   # 【3-001】ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧可能か確認
