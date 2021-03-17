@@ -21,7 +21,7 @@ def check_1_003
     end
 
     @d.find_element(:link_text, "新規登録").click
-    @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+    @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
   end
 
   # 新規登録フォームの入力項目をクリア
@@ -51,7 +51,7 @@ def check_1_005
     end
 
     @d.find_element(:link_text, "新規登録").click
-    @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+    @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
   end
 
   # 新規登録フォームの入力項目をクリア
@@ -91,7 +91,7 @@ def check_1_006
     end
 
     @d.find_element(:link_text, "新規登録").click
-    @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+    @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
   end
 
   # 新規登録フォームの入力項目をクリア
@@ -107,7 +107,7 @@ def check_1_008
   @wait.until {@d.find_element(:id, 'user_profile').displayed?}
   @d.find_element(:id, 'user_profile').clear
   @d.find_element(:class,"form__btn").click
-  @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+  @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
 
   if /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][8] = "[1-008] ◯：プロフィールが必須であること。"
@@ -122,7 +122,7 @@ def check_1_008
     end
 
     @d.find_element(:link_text, "新規登録").click
-    @wait.until { /ユーザー新規登録/.match(@d.page_source) rescue false}
+    @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
   end
 
   # 新規登録フォームの入力項目をクリア

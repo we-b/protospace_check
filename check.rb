@@ -25,8 +25,8 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 
 # Prototype投稿情報
 @prototype_title = "荘厳"
-@prototype_catch_copy = "色の迫力"
-@prototype_catch_copy2 = "自然の息吹"
+@prototype_catch_copy = "自然の息吹"
+@prototype_catch_copy2 = "色の迫力"
 @prototype_concept = "感情と色"
 @prototype_image_name = "sakura.jpeg"
 @prototype_image = "/Users/mizutaryousuke/projects/protospace_check/sakura.jpeg"
@@ -39,9 +39,6 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 # チェック項目の内容はハッシュ
 # {チェック番号： 3 , チェック合否： "〇" , チェック内容： "〇〇をチェック" , チェック詳細： "○○×"}
 @check_log = []
-
-# ユーザー新規登録画面,出品画面,購入画面で表示されるエラーログを保存するハッシュ
-@error_log_hash = {}
 
 # 出力文章(メインチェック番号) = [1-001]等のチェック
 # @puts_num_array = []
@@ -57,6 +54,8 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 @flag_4_001 = 0;
 @flag_7_001 = 0;
 @flag_8_001 = 0;
+@flag_9_002 = 0;
+
 
 begin
   main()
@@ -121,6 +120,15 @@ ensure
       puts "--------------------------------------------------------------------------"
   end
 
-  puts @user_email
-  sleep 300000000
+  # その他情報の出力(URL情報やユーザーアカウントの詳細)
+  puts "\n\n\n↓↓↓ 【その他情報の詳細】 ↓↓↓"
+  # index = 0はその他出力情報配列
+  @puts_num_array[0].each{|check|
+      # チェック内容が格納されている時だけ出力する
+      if check != false
+          puts check
+      end
+  }
+
+  sleep 3000000000
 end
