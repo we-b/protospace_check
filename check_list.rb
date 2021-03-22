@@ -10,11 +10,11 @@ def check_1_003
 
   if /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][3] = "[1-003] ◯：メールアドレスは@を含む必要がある。"
-  elsif @d.find_element(:class, "card__wrapper").displayed?
+  else
     @puts_num_array[1][3] = "[1-003] ×：メールアドレスが@を含なくても新規登録できてしまう。"
 
     # 登録できてしまった場合、ログアウトしておく
-    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+    @d.find_element(:link_text, "ログアウト").displayed? rescue false
     if display_flag
       @d.find_element(:link_text, "ログアウト").click
       @d.get(@url)
@@ -40,7 +40,7 @@ def check_1_005
 
   if /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][5] = "[1-005] ◯：パスワードは6文字以上であること。"
-  elsif @d.find_element(:class, "card__wrapper").displayed?
+  else
     @puts_num_array[1][5] = "[1-005] ×：パスワードが5文字以下でも新規登録できてしまう。"
 
     # 登録できてしまった場合、ログアウトしておく
@@ -80,7 +80,7 @@ def check_1_006
 
   if /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][6] = "[1-006] ◯：パスワードは確認用を含めて2回入力すること。"
-  elsif @d.find_element(:class, "card__wrapper").displayed?
+  else
     @puts_num_array[1][6] = "[1-006] ×：「パスワード再入力」の項目が未入力でも新規登録できてしまう。"
 
     # 登録できてしまった場合、ログアウトしておく
@@ -106,12 +106,12 @@ def check_1_008
 
   @wait.until {@d.find_element(:id, 'user_profile').displayed?}
   @d.find_element(:id, 'user_profile').clear
-  @d.find_element(:class,"form__btn").click
+  @d.find_element(:class, "form__btn").click
   @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
 
   if /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][8] = "[1-008] ◯：プロフィールが必須であること。"
-  elsif @d.find_element(:class, "card__wrapper").displayed?
+  else
     @puts_num_array[1][8] = "[1-008] ×：プロフィール未入力でも登録できてしまう。"
 
     # 登録できてしまった場合、ログアウトしておく
@@ -528,7 +528,8 @@ def check_6
     @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
     # トップ画面に遷移であれば正解
-    if @d.find_element(:class, "card__wrapper").displayed?
+    display_flag = @d.find_element(:class, "card__wrapper").displayed? rescue false
+    if display_flag
       check_detail["チェック詳細"] << "◯：ログイン状態のユーザーであっても、他のユーザーのプロトタイプ編集画面のURLを直接入力して遷移しようとすると、トップ画面にリダイレクトされる。\n"
       check_flag += 1
     elsif /ユーザー新規登録/.match(@d.page_source)

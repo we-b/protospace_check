@@ -24,7 +24,7 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 @password = "aaa111"
 
 # Prototype投稿情報
-@prototype_title = "荘厳"
+@prototype_title = "自然"
 @prototype_catch_copy = "自然の息吹"
 @prototype_catch_copy2 = "色の迫力"
 @prototype_concept = "感情と色"
@@ -56,11 +56,9 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 @flag_8_001 = 0;
 @flag_9_002 = 0;
 
-
 begin
   main()
 ensure
-
    #メインチェック番号の出力([1-001]系のチェック)
    puts "↓↓↓ 【[1-001]系のチェックの詳細】 ↓↓↓"
 
