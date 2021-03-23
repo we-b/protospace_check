@@ -6,7 +6,7 @@ def check_1_003
 
   input_sign_up(@check_email, @password, @user_name, @user_profile, @user_occupation, @user_position)
   @d.find_element(:class,"form__btn").click
-  @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+  @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][3] = "[1-003] ◯：メールアドレスは@を含む必要がある。"
@@ -36,7 +36,7 @@ def check_1_005
 
   input_sign_up(@user_email, @check_password, @user_name, @user_profile, @user_occupation, @user_position)
   @d.find_element(:class,"form__btn").click
-  @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+  @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][5] = "[1-005] ◯：パスワードは6文字以上であること。"
@@ -76,7 +76,7 @@ def check_1_006
   @d.find_element(:id, 'user_position').send_keys(@user_position)
 
   @d.find_element(:class,"form__btn").click
-  @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+  @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][6] = "[1-006] ◯：パスワードは確認用を含めて2回入力すること。"
@@ -107,7 +107,7 @@ def check_1_008
   @wait.until {@d.find_element(:id, 'user_profile').displayed?}
   @d.find_element(:id, 'user_profile').clear
   @d.find_element(:class, "form__btn").click
-  @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+  @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if /ユーザー新規登録/.match(@d.page_source)
     @puts_num_array[1][8] = "[1-008] ◯：プロフィールが必須であること。"

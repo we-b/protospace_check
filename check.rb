@@ -24,7 +24,7 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 @password = "aaa111"
 
 # Prototype投稿情報
-@prototype_title = "自然"
+@prototype_title = "999"
 @prototype_catch_copy = "自然の息吹"
 @prototype_catch_copy2 = "色の迫力"
 @prototype_concept = "感情と色"
@@ -127,6 +127,12 @@ ensure
           puts check
       end
   }
+
+  # 自動チェック終了のお知らせ
+  puts "自動チェックツール全プログラム終了"
+  puts "手動チェック時は、以下のアカウント情報をお使いください。\n\n"
+  puts "ユーザー名: 進撃のアーティスト\nemail: #{@user_email}\n\nユーザー名: テストユーザー2\nemail: #{@user_email2}\n\n"
+  puts "パスワード: #{@password} (全ユーザー共通)\n"
 
   sleep 3000000000
 end
