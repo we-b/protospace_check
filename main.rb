@@ -1,10 +1,8 @@
 require './check_list'
 
 def main
-  # @url = "https://protospace2020.herokuapp.com"
-  @url = "http://localhost:3000"
-
-  @d.get(@url)
+  # チェック前の準備
+  start
 
   # ユーザー管理機能のチェック
   sign_up_check
@@ -42,6 +40,29 @@ def main
   # ログアウト状態でのチェック
   logout_check
 
+end
+
+
+# チェック前の準備
+def start
+
+  puts <<-EOT
+----------------------------
+自動チェックツールを起動します。
+
+動作チェックするアプリの本番環境URLを入力し、
+入力しenterキーを押してください (例：http://protospace2020.herokuapp.com/)
+
+EOT
+
+  input_url = gets.chomp
+  # 「https://」を削除
+  @url_ele = input_url.gsub(/https:\/\/|http:\/\//, "https:\/\/" => "", "http:\/\/" => "")
+
+  puts "\n自動チェックを開始します。\n"
+
+  @url = "https://" + @url_ele
+  @d.get(@url)
 end
 
 
@@ -457,26 +478,6 @@ def prototype_title_click_from_top(title)
     end
   }
 end
-
-
-# # トップ画面でPrototype名を基準に、該当のPrototype投稿をクリックしてPrototype詳細画面へ遷移
-# def prototype_title_click_from_top(title)
-#   # トップ画面のPrototype名要素を全部取得
-#   prototypes = @d.find_elements(:class, "card")
-#   prototypes.each{|prototype|
-#     if prototype.find_element(:class, "card__title").text == title
-#       prototype.find_element(:class, "card__title").click
-#       @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false || @d.find_element(:class, "card__wrapper").displayed? rescue false}
-#       display_flag = @d.find_element(:class, "prototype__wrapper").displayed? rescue false
-#       if ! display_flag
-#         prototype.find_element(:class, "card__image").click
-#         @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false || @d.find_element(:class, "card__wrapper").displayed? rescue false}
-#         break
-#       end
-#       break
-#     end
-#   }
-# end
 
 
 # Prototype編集機能のチェック
