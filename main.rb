@@ -1,3 +1,4 @@
+require 'ruby_jard'
 require './check_list'
 
 def main
@@ -61,7 +62,7 @@ EOT
 
   puts "\n自動チェックを開始します。\n"
 
-  @url = "https://" + @url_ele
+  @url = "http://" + @url_ele
   @d.get(@url)
 end
 
@@ -819,9 +820,7 @@ def logout_check
   # 【9-001】ログアウト状態のユーザーは、プロトタイプ新規投稿/編集ページに遷移しようとすると、ログインページにリダイレクトされること
   # プロトタイプ新規投稿ページの検証
   @d.get(@post_prototype_url)
-  @wait.until {/ログイン/.match(@d.page_source)}
-
-  display_flag = @d.find_element(:class, "card__wrapper").displayed? rescue false
+  
   if /ログイン/.match(@d.page_source)
     @puts_num_array[9][1] = "[9-001] ◯：ログアウト状態のユーザーは、プロトタイプ新規投稿画面に遷移しようとすると、ログインページにリダイレクトされること。"
   elsif /新規プロトタイプ投稿/.match(@d.page_source)
@@ -834,9 +833,7 @@ def logout_check
 
   # プロトタイプ編集ページの検証
   @d.get(@edit_prototype_url)
-  @wait.until {/ログイン/.match(@d.page_source)}
 
-  display_flag = @d.find_element(:class, "card__wrapper").displayed? rescue false
   if /ログイン/.match(@d.page_source)
     @puts_num_array[9][1] = @puts_num_array[9][1] + "\n[9-001] ◯：ログアウト状態のユーザーは、プロトタイプ編集画面に遷移しようとすると、ログインページにリダイレクトされること。"
   elsif /プロトタイプ編集/.match(@d.page_source)
