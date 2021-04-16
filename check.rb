@@ -1,4 +1,4 @@
- require 'ruby_jard'
+# require 'ruby_jard'
 require 'selenium-webdriver'
 require 'securerandom'
 require './main'
@@ -32,6 +32,8 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 @prototype_image = "/Users/tech-camp/protospace_check/protospace_check/sakura.jpeg"
 @comment = "素晴らしい！"
 
+options = Selenium::WebDriver::Chrome::Options.new
+options.add_argument('--headless')
 @d = Selenium::WebDriver.for :chrome
 @wait = Selenium::WebDriver::Wait.new(:timeout => 180000)
 
@@ -134,5 +136,5 @@ ensure
   puts "ユーザー名: 進撃のアーティスト\nemail: #{@user_email}\n\nユーザー名: テストユーザー2\nemail: #{@user_email2}\n\n"
   puts "パスワード: #{@password} (全ユーザー共通)\n"
 
-  sleep 3000000000
+  #sleep 3000000000
 end
