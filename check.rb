@@ -29,9 +29,11 @@ randm_word = SecureRandom.hex(8) #=> "4a01bbd139f5e94bd249"
 @prototype_catch_copy2 = "色の迫力"
 @prototype_concept = "感情と色"
 @prototype_image_name = "sakura.jpeg"
-@prototype_image = "/Users/mizutaryousuke/projects/protospace_check/sakura.jpeg"
+@prototype_image = "/Users/tech-camp/protospace_check/protospace_check/sakura.jpeg"
 @comment = "素晴らしい！"
 
+options = Selenium::WebDriver::Chrome::Options.new
+options.add_argument('--headless')
 @d = Selenium::WebDriver.for :chrome
 @wait = Selenium::WebDriver::Wait.new(:timeout => 180000)
 
@@ -134,5 +136,5 @@ ensure
   puts "ユーザー名: 進撃のアーティスト\nemail: #{@user_email}\n\nユーザー名: テストユーザー2\nemail: #{@user_email2}\n\n"
   puts "パスワード: #{@password} (全ユーザー共通)\n"
 
-  sleep 3000000000
+  #sleep 3000000000
 end

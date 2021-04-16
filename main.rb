@@ -1,3 +1,4 @@
+# require 'ruby_jard'
 require './check_list'
 
 def main
@@ -61,7 +62,7 @@ EOT
 
   puts "\n自動チェックを開始します。\n"
 
-  @url = "https://" + @url_ele
+  @url = "http://" + @url_ele
   @d.get(@url)
 end
 
@@ -423,6 +424,7 @@ end
 # Prototype一覧表示機能のチェック
 def check_top_prototype_display
   # 【3-001】ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧可能か確認
+  @wait.until {/ログアウト/.match(@d.page_source)}
   display_flag = @d.find_element(:class, "card").displayed? rescue false
   if display_flag
     @flag_3_001 += 1
@@ -698,7 +700,7 @@ def show_user
   # トップ画面で検証
   @d.get(@url)
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
-  @d.find_element(:class, "card__user").click
+  @d.find_element(:partial_link_text, "by " + @user_name).click
   @wait.until {@d.find_element(:class, "user__wrapper").displayed? rescue false || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   display_flag = @d.find_element(:class, "user__wrapper").displayed? rescue false
@@ -764,6 +766,7 @@ def logout_check
   end
 
   # 【3-001】ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧可能か確認
+  @wait.until {/ログイン/.match(@d.page_source)}
   display_flag = @d.find_element(:class, "card").displayed? rescue false
   if display_flag
     @flag_3_001 += 1
@@ -772,7 +775,7 @@ def logout_check
   else
     @puts_num_array[3][1] = "[3-001] ×：ログアウトの状態では、プロトタイプ一覧が表示されていない。"
   end
-
+  
   if @flag_3_001 == 2
     @puts_num_array[3][1] = "[3-001] ◯：ログイン・ログアウトの状態に関わらず、プロトタイプ一覧を閲覧できること。"
   end
@@ -781,8 +784,8 @@ def logout_check
   # 画像をクリックして、Prototype詳細画面に遷移するか確認
   @d.find_element(:class,"card__img").click
   @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false || @d.find_element(:class, "card__wrapper").displayed? rescue false}
-
-  display_flag = @d.find_element(:class, "prototype__wrapper").displayed? rescue false
+  sleep 2
+  display_flag = @d.find_element(:class, "comments_lists").displayed? rescue false
   if display_flag
     @flag_3_002 += 1
   elsif @puts_num_array[3][2]
@@ -798,8 +801,8 @@ def logout_check
   # Prototypeのタイトルをクリックして、Prototype詳細画面に遷移するか確認
   @d.find_element(:class,"card__title").click
   @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false || @d.find_element(:class, "card__wrapper").displayed? rescue false}
-
-  display_flag = @d.find_element(:class, "prototype__wrapper").displayed? rescue false
+  sleep 2
+  display_flag = @d.find_element(:class, "comments_lists").displayed? rescue false
   if display_flag
     @flag_3_002 += 1
   elsif @puts_num_array[3][2]
@@ -819,9 +822,7 @@ def logout_check
   # 【9-001】ログアウト状態のユーザーは、プロトタイプ新規投稿/編集ページに遷移しようとすると、ログインページにリダイレクトされること
   # プロトタイプ新規投稿ページの検証
   @d.get(@post_prototype_url)
-  @wait.until {/ログイン/.match(@d.page_source)}
-
-  display_flag = @d.find_element(:class, "card__wrapper").displayed? rescue false
+  
   if /ログイン/.match(@d.page_source)
     @puts_num_array[9][1] = "[9-001] ◯：ログアウト状態のユーザーは、プロトタイプ新規投稿画面に遷移しようとすると、ログインページにリダイレクトされること。"
   elsif /新規プロトタイプ投稿/.match(@d.page_source)
@@ -834,9 +835,7 @@ def logout_check
 
   # プロトタイプ編集ページの検証
   @d.get(@edit_prototype_url)
-  @wait.until {/ログイン/.match(@d.page_source)}
 
-  display_flag = @d.find_element(:class, "card__wrapper").displayed? rescue false
   if /ログイン/.match(@d.page_source)
     @puts_num_array[9][1] = @puts_num_array[9][1] + "\n[9-001] ◯：ログアウト状態のユーザーは、プロトタイプ編集画面に遷移しようとすると、ログインページにリダイレクトされること。"
   elsif /プロトタイプ編集/.match(@d.page_source)
