@@ -136,5 +136,5 @@ ensure
   puts "ユーザー名: 進撃のアーティスト\nemail: #{@user_email}\n\nユーザー名: テストユーザー2\nemail: #{@user_email2}\n\n"
   puts "パスワード: #{@password} (全ユーザー共通)\n"
 
-  #sleep 3000000000
+  sleep 3000000000
 end
