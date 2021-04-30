@@ -1,4 +1,4 @@
-#require 'ruby_jard'
+# require 'ruby_jard'
 require './check_list'
 
 def main
@@ -543,7 +543,7 @@ def edit_prototype
   else
     @puts_num_array[5][2] = "[5-002] ×：何も編集せずに更新をすると、画像無しのプロトタイプになってしまう。"
     @d.get(@url)
-    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    # @d.find_element(:class, "card__wrapper").displayed? rescue false
     prototype_title_click_from_top(@prototype_title)
   end
 

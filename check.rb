@@ -35,7 +35,7 @@ random_title = SecureRandom.alphanumeric(6)
 options = Selenium::WebDriver::Chrome::Options.new
 options.add_argument('--headless')
 @d = Selenium::WebDriver.for :chrome
-@wait = Selenium::WebDriver::Wait.new(:timeout => 180000)
+@wait = Selenium::WebDriver::Wait.new(:timeout => 80)
 
 # チェック項目の結果や詳細を保存する配列
 # チェック項目の内容はハッシュ
