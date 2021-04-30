@@ -524,7 +524,6 @@ def edit_prototype
     prototype_title_click_from_top(@prototype_title)
   end
 
-  # 【5-002】何も編集せずに更新をしても、画像無しのプロトタイプにならないこと
   @d.find_element(:class, "form__btn").click
   # 【5-005】正しく編集できた場合は、詳細画面へ遷移すること
   display_flag = @d.find_element(:class, "prototype__wrapper").displayed? rescue false
@@ -537,6 +536,7 @@ def edit_prototype
     prototype_title_click_from_top(@prototype_title)
   end
 
+  # 【5-002】何も編集せずに更新をしても、画像無しのプロトタイプにならないこと
   display_flag = @d.find_element(:class, "prototype__image").displayed? rescue false
   if display_flag 
     @puts_num_array[5][2] = "[5-002] ◯：何も編集せずに更新をしても、画像無しのプロトタイプにならないこと。"
