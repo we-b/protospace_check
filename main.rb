@@ -1,4 +1,4 @@
-# require 'ruby_jard'
+#require 'ruby_jard'
 require './check_list'
 
 def main
@@ -526,10 +526,19 @@ def edit_prototype
 
   # 【5-002】何も編集せずに更新をしても、画像無しのプロトタイプにならないこと
   @d.find_element(:class, "form__btn").click
-  @wait.until {@d.find_element(:partial_link_text, "編集").displayed? rescue false}
+  # 【5-005】正しく編集できた場合は、詳細画面へ遷移すること
+  display_flag = @d.find_element(:class, "prototype__wrapper").displayed? rescue false
+  if display_flag
+    @puts_num_array[5][5] = "[5-005] ◯：正しく編集できた場合は、詳細画面へ遷移すること。"
+  else
+    @puts_num_array[5][5] = "[5-005] ×：Prototype編集画面で「保存する」を押下しても、詳細画面へ遷移しない。"
+    @d.get(@url)
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+    prototype_title_click_from_top(@prototype_title)
+  end
 
   display_flag = @d.find_element(:class, "prototype__image").displayed? rescue false
-  if display_flag
+  if display_flag 
     @puts_num_array[5][2] = "[5-002] ◯：何も編集せずに更新をしても、画像無しのプロトタイプにならないこと。"
   else
     @puts_num_array[5][2] = "[5-002] ×：何も編集せずに更新をすると、画像無しのプロトタイプになってしまう。"
@@ -566,7 +575,7 @@ def edit_prototype
   @d.find_element(:id, "prototype_catch_copy").send_keys(@prototype_catch_copy2)
   @d.find_element(:class, "form__btn").click
   @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
-
+  
   # 【5-001】投稿に必要な情報を入力すると、プロトタイプが編集できること
   display_flag = @d.find_element(:class, "card__wrapper").displayed? rescue false
   if /#{@prototype_catch_copy2}/.match(@d.page_source)
@@ -579,16 +588,7 @@ def edit_prototype
     @puts_num_array[5][1] = "[5-001] ×：Prototype編集画面にて「キャッチコピー」を編集し保存ボタンをクリックしたが、挙動が正常ではありません。"
   end
 
-  # 【5-005】正しく編集できた場合は、詳細画面へ遷移すること
-  display_flag = @d.find_element(:class, "prototype__wrapper").displayed? rescue false
-  if display_flag
-    @puts_num_array[5][5] = "[5-005] ◯：正しく編集できた場合は、詳細画面へ遷移すること。"
-  else
-    @puts_num_array[5][5] = "[5-005] ×：Prototype編集画面で「保存する」を押下しても、詳細画面へ遷移しない。"
-    @d.get(@url)
-    @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
-    prototype_title_click_from_top(@prototype_title)
-  end
+  
 end
 
 
