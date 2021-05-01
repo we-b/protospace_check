@@ -1,4 +1,4 @@
-require 'ruby_jard'
+# require 'ruby_jard'
 require './check_list'
 
 def main
@@ -555,7 +555,7 @@ def edit_prototype
   @d.find_element(:id, "prototype_concept").clear
   @d.find_element(:class, "form__btn").click
   @wait.until {/プロトタイプ編集/.match(@d.page_source)}
-
+  check_7
   if /プロトタイプ編集/.match(@d.page_source)
     @puts_num_array[5][4] = "[5-004] ◯：空の入力欄がある場合は、編集できずにその画面に留まること。"
     @d.get(@url)
@@ -566,7 +566,6 @@ def edit_prototype
     @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
     prototype_title_click_from_top(@prototype_title)
   end
-
   @wait.until {@d.find_element(:partial_link_text, "編集").displayed? rescue false}
   @d.find_element(:partial_link_text, "編集").click
   @wait.until {/プロトタイプ編集/.match(@d.page_source)}

@@ -1,4 +1,4 @@
-require 'ruby_jard'
+ # require 'ruby_jard'
 require 'selenium-webdriver'
 require 'securerandom'
 require './main'

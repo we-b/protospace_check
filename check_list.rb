@@ -100,7 +100,6 @@ end
 
 # 【1-018】ユーザーの新規登録には、パスワードとパスワード確認用の値の一致が必須であること
 def check_1_018
-  jard
   # 「パスワード再入力」の項目の値を変更確認
   @wait.until {@d.find_element(:id, 'user_email').displayed?}
   @d.find_element(:id, 'user_email').send_keys(@user_email)
@@ -378,6 +377,43 @@ def check_3
     end
 
     check_detail["チェック合否"] = check_flag == 3 ? "◯" : "×"
+
+  # エラー発生有無にかかわらず実行
+  ensure
+    @check_log.push(check_detail)
+  end
+end
+
+# 空の入力欄がある場合は、編集できずにそのページに留まること
+def check_7
+  check_detail = {"チェック番号"=> 7, "チェック合否"=> "", "バリデーションによって投稿ができず、そのページに留まった場合でも、入力済みの項目（画像以外）は消えないこと", "チェック詳細"=> ""}
+
+  begin
+    check_flag = 0
+
+    # Prototype編集画面でのPrototype情報を取得
+    edit_prototype_title = @d.find_element(:id, "prototype_title").text rescue "Error: id: prototype_title(Prototype名)が見つかりません\n"
+    edit_prototype_catch_copy = @d.find_element(:id, "prototype_catch_copy").text rescue "Error: id: prototype_catch_copy(Prototypeのキャッチコピー)が見つかりません\n"
+
+    # Prototype編集画面の表示内容をチェック
+    if /#{@prototype_title}/.match(@d.page_source)
+      check_detail["チェック詳細"] << "◯：Prototype編集画面にPrototypeの「タイトル」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：Prototype編集画面にPrototypeの「タイトル」が表示されていない。\n"
+      check_detail["チェック詳細"] << edit_prototype_title
+    end
+
+    if edit_prototype_catch_copy == @prototype_catch_copy
+      check_detail["チェック詳細"] << "◯：Prototype編集画面にPrototypeの「キャッチコピー」が表示されている。\n"
+      check_flag += 1
+    else
+      check_detail["チェック詳細"] << "×：Prototype編集画面にPrototypeの「キャッチコピー」が表示されていない。\n"
+      check_detail["チェック詳細"] << edit_prototype_catch_copy
+    end
+
+
+    check_detail["チェック合否"] = check_flag == 2 ? "◯" : "×"
 
   # エラー発生有無にかかわらず実行
   ensure
