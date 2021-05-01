@@ -1,4 +1,4 @@
-# require 'ruby_jard'
+require 'ruby_jard'
 require './check_list'
 
 def main
@@ -108,14 +108,15 @@ def sign_up_check
   end
 
   # 【1-003】メールアドレスは@を含む必要があること
-  check_1_003
+  #check_1_003
 
   # 【1-005】パスワードは6文字以上であること
-  check_1_005
+  #check_1_005
 
   # 【1-006】パスワードは確認用を含めて2回入力する
-  check_1_006
-
+  #check_1_006
+  # 【1-018】ユーザーの新規登録には、パスワードとパスワード確認用の値の一致が必須であること
+  check_1_018
   # 【1-008】プロフィールが必須であること
   check_1_008
 end

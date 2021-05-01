@@ -98,6 +98,47 @@ def check_1_006
   clear_sign_up
 end
 
+# 【1-018】ユーザーの新規登録には、パスワードとパスワード確認用の値の一致が必須であること
+def check_1_018
+  jard
+  # 「パスワード再入力」の項目の値を変更確認
+  @wait.until {@d.find_element(:id, 'user_email').displayed?}
+  @d.find_element(:id, 'user_email').send_keys(@user_email)
+  @wait.until {@d.find_element(:id, 'user_password').displayed?}
+  @d.find_element(:id, 'user_password').send_keys(@password)
+  @wait.until {@d.find_element(:id, 'user_password_confirmation').displayed?}
+  @d.find_element(:id, 'user_password_confirmation').send_keys(@password_dummy)
+  @wait.until {@d.find_element(:id, 'user_name').displayed?}
+  @d.find_element(:id, 'user_name').send_keys(@user_name)
+  @wait.until {@d.find_element(:id, 'user_profile').displayed?}
+  @d.find_element(:id, 'user_profile').send_keys(@user_profile)
+  @wait.until {@d.find_element(:id, 'user_occupation').displayed?}
+  @d.find_element(:id, 'user_occupation').send_keys(@user_occupation)
+  @wait.until {@d.find_element(:id, 'user_position').displayed?}
+  @d.find_element(:id, 'user_position').send_keys(@user_position)
+
+  @d.find_element(:class,"form__btn").click
+  @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+  if /ユーザー新規登録/.match(@d.page_source)
+    @puts_num_array[1][18] = "[1-018] ◯：ユーザーの新規登録には、パスワードとパスワード確認用の値の一致が必須であること"
+  else
+    @puts_num_array[1][18] = "[1-018] ×：ユーザーの新規登録には、パスワードとパスワード確認用の値が不一致でも新規登録できてしまう。"
+
+    # 登録できてしまった場合、ログアウトしておく
+    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+    if display_flag
+      @d.find_element(:link_text, "ログアウト").click
+      @d.get(@url)
+    end
+
+    @d.find_element(:link_text, "新規登録").click
+    @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+  end
+
+  # 新規登録フォームの入力項目をクリア
+  clear_sign_up
+end
 
 # 【1-008】プロフィールが必須であること
 def check_1_008

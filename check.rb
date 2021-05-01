@@ -1,4 +1,4 @@
-# require 'ruby_jard'
+require 'ruby_jard'
 require 'selenium-webdriver'
 require 'securerandom'
 require './main'
@@ -22,7 +22,8 @@ random_title = SecureRandom.alphanumeric(6)
 
 # パスワードは全ユーザー共通
 @password = "aaa111"
-
+# パスワードが一致しているか確認用のダミー値
+@password_dummy = "bbb222"
 # Prototype投稿情報
 @prototype_title = random_title
 @prototype_catch_copy = "自然の息吹"
