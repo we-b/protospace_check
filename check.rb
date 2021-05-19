@@ -1,4 +1,4 @@
- # require 'ruby_jard'
+# require 'ruby_jard'
 require 'selenium-webdriver'
 require 'securerandom'
 require './main'
@@ -37,7 +37,7 @@ options = Selenium::WebDriver::Chrome::Options.new
 options.add_argument('--headless')
 @d = Selenium::WebDriver.for :chrome
 # @d = Selenium::WebDriver.for :chrome , options: options
-@wait = Selenium::WebDriver::Wait.new(:timeout => 80)
+@wait = Selenium::WebDriver::Wait.new(:timeout => 30)
 
 # チェック項目の結果や詳細を保存する配列
 # チェック項目の内容はハッシュ
