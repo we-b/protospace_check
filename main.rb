@@ -1,4 +1,4 @@
-# require 'ruby_jard'
+require 'ruby_jard'
 require './check_list'
 
 def main

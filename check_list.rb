@@ -1,5 +1,6 @@
 # 【1-003】メールアドレスは@を含む必要があること
 def check_1_003
+  jard
   # ＠を含まない値で確認
   randm_word = SecureRandom.hex(8)
   @check_email = "user_#{randm_word}co.jp"
