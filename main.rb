@@ -1,4 +1,4 @@
-require 'ruby_jard'
+# require 'ruby_jard'
 require './check_list'
 
 def main
@@ -57,6 +57,13 @@ def start
 EOT
 
   input_url = gets.chomp
+  if input_url == "http://protospace2020.herokuapp.com/"
+    puts "見本アプリと同じURLです！動作を続けますか？（y/n）"
+    input = gets.chomp
+    if input == "n"
+      exit
+    end
+  end
   # 「https://」を削除
   @url_ele = input_url.gsub(/https:\/\/|http:\/\//, "https:\/\/" => "", "http:\/\/" => "")
 
@@ -272,7 +279,7 @@ def login_user
   end
 
   # 【1-016】ログイン状態では、トップ画面に「こんにちは、〇〇さん」とユーザー名が表示されていること
-  if /こんにちは/.match(@d.page_source) && /#{@user_name}/.match(@d.page_source)
+  if /こんにちは/.match(@d.page_source) && /#{@user_name}さん/.match(@d.page_source)
     @puts_num_array[1][16] = "[1-016] ◯：ログイン状態では、トップ画面に「こんにちは、〇〇さん」とユーザー名が表示されている。"
   else
     @puts_num_array[1][16] = "[1-016] ×：ログイン状態では、トップ画面に「こんにちは、〇〇さん」とユーザー名が表示されていない。"
