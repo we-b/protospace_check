@@ -200,11 +200,10 @@ end
 
 # トップメニューに戻ってきた後にログアウトする
 def logout_from_the_topMenu
-  @d.find_element(:link_text, "ログアウト").click
-  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
-  display_flag = @d.find_element(:class, "card__wrapper").displayed? rescue false
-  if display_flag
+  @d.find_element(:link_text, "ログアウト").click
+  
+  if display_flag = @wait.until {/新規登録/.match(@d.page_source) rescue false}
     @puts_num_array[1][14] = "[1-014] ◯：トップ画面から、ログアウトができること。"
   else
     @puts_num_array[1][14] = "[1-014] ×：トップ画面から、ログアウトができない。"
@@ -212,6 +211,7 @@ def logout_from_the_topMenu
     @puts_num_array[0].push("手動でのチェックをお願いします。")
     raise "ユーザーのログイン/ログアウトにて不備あり。"
   end
+
 end
 
 
