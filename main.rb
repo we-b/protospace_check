@@ -237,7 +237,7 @@ def login_user
   end
 
   if @flag_1_012 == 2
-    @puts_num_array[1][12] = "[1-012] ◯：フォームに適切な値が入力されていない状態では、新規登録/ログインはできず、そsのページに留まること。"
+    @puts_num_array[1][12] = "[1-012] ◯：フォームに適切な値が入力されていない状態では、新規登録/ログインはできず、そのページに留まること。"
   end
 
   @wait.until {@d.find_element(:id, 'user_email').displayed?}

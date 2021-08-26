@@ -30,7 +30,7 @@ random_title = SecureRandom.alphanumeric(6)
 @prototype_catch_copy2 = "色の迫力"
 @prototype_concept = "感情と色"
 @prototype_image_name = "sakura.jpeg"
-@prototype_image = "/Users/tech-camp/protospace_check/protospace_check/sakura.jpeg"
+@prototype_image = "/Users/tech-camp/development/protospace_check/sakura.jpeg"
 @comment = "素晴らしい！"
 
 options = Selenium::WebDriver::Chrome::Options.new

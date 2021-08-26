@@ -522,6 +522,14 @@ def check_5_login
     @check_5_detail["チェック詳細"] << "×：[ログイン状態]ユーザー詳細画面にPrototypeの「投稿者名」が表示されていない。\n"
     @check_5_detail["チェック詳細"] << user_prototype_user_name
   end
+
+  # ユーザー詳細画面でのpage-heading表示内容をチェック
+  if /#{@user_name}さんのプロトタイプ/.match(@d.page_source) && /#{@user_name}さんの情報/.match(@d.page_source)
+    @check_5_detail["チェック詳細"] << "◯：[ログイン状態]ユーザー詳細画面で「〇〇さんの情報」「〇〇さんのプロトタイプ」が正しく表示されている。\n"
+    @flag_check_5 += 1
+  else
+    @check_5_detail["チェック詳細"] << "×：[ログイン状態]ユーザー詳細画面で「〇〇さんの情報」「〇〇さんのプロトタイプ」が正しく表示されていない。\n"
+  end
 end
 
 
@@ -587,7 +595,17 @@ def check_5_logout
       @check_5_detail["チェック詳細"] << user_prototype_user_name
     end
 
-    @check_5_detail["チェック合否"] = @flag_check_5 == 16 ? "◯" : "×"
+  # ユーザー詳細画面のpage-headingの表示内容をチェック
+
+  # ユーザー詳細画面でのpage-heading表示内容をチェック
+  if /#{@user_name}さんのプロトタイプ/.match(@d.page_source) && /#{@user_name}さんの情報/.match(@d.page_source)
+    @check_5_detail["チェック詳細"] << "◯：[ログアウト状態]ユーザー詳細画面で「〇〇さんの情報」「〇〇さんのプロトタイプ」が正しく表示されている。\n"
+    @flag_check_5 += 1
+  else
+    @check_5_detail["チェック詳細"] << "×：[ログアウト状態]ユーザー詳細画面で「〇〇さんの情報」「〇〇さんのプロトタイプ」が正しく表示されていない。\n"
+  end
+
+    @check_5_detail["チェック合否"] = @flag_check_5 == 18 ? "◯" : "×"
 
   ensure
     @check_log.push(@check_5_detail)
