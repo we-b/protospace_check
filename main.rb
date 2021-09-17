@@ -644,7 +644,7 @@ def comment_prototype
   @edit_prototype_url = @d.current_url + "/edit"
 
   # 【7-001】コメント投稿欄は、ログイン状態のユーザーへのみ、詳細ページに表示されていること
-  display_flag = @d.find_element(:id, "comment_text").displayed? rescue false || @d.find_element(:id, "comment_content").displayed?
+  display_flag = @d.find_element(:id, "comment_text").displayed? rescue false || @d.find_element(:id, "comment_content").displayed? rescue false
   if display_flag
     @flag_7_001 += 1
   else
@@ -668,7 +668,7 @@ def comment_prototype
     prototype_title_click_from_top(@prototype_title)
   end
 
-  @d.find_element(:id, "comment_text").send_keys(@comment) rescue false || @d.find_element(:id, "comment_content").send_keys(@comment)
+  @d.find_element(:id, "comment_text").send_keys(@comment) rescue false || @d.find_element(:id, "comment_content").send_keys(@comment) rescue false
   @d.find_element(:class, "form__btn").click
   @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
