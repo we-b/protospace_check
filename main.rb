@@ -21,6 +21,8 @@ def main
   create_prototype_without_concept
 
   # Prototype投稿機能のチェック
+  @d.get(@url)
+  @d.find_element(:link_text, "New Proto").click
   create_prototype
 
   # Prototype一覧表示機能のチェック
@@ -89,6 +91,8 @@ def sign_up_check
 
   #全項目未入力で「登録する」ボタンをクリック
   @d.find_element(:class, "form__btn").click
+  @d.get(@url)
+  @d.find_element(:link_text, "新規登録").click
   @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
 
   #念の為登録できてしまわないかチェック
@@ -115,16 +119,26 @@ def sign_up_check
   end
 
   # 【1-003】メールアドレスは@を含む必要があること
+  @d.get(@url)
+  @d.find_element(:link_text, "新規登録").click
   check_1_003
 
   # 【1-005】パスワードは6文字以上であること
+  @d.get(@url)
+  @d.find_element(:link_text, "新規登録").click
   check_1_005
 
   # 【1-006】パスワードは確認用を含めて2回入力する
+  @d.get(@url)
+  @d.find_element(:link_text, "新規登録").click
   check_1_006
   # 【1-018】ユーザーの新規登録には、パスワードとパスワード確認用の値の一致が必須であること
+  @d.get(@url)
+  @d.find_element(:link_text, "新規登録").click
   check_1_018
   # 【1-008】プロフィールが必須であること
+  @d.get(@url)
+  @d.find_element(:link_text, "新規登録").click
   check_1_008
 end
 
@@ -223,6 +237,8 @@ def login_user
   #全項目未入力で「ログイン」ボタンをクリック
   @wait.until {@d.find_element(:class, "form__btn").displayed? rescue false}
   @d.find_element(:class, "form__btn").click
+  @d.get(@url)
+  @d.find_element(:link_text, "ログイン").click
   @wait.until {/ユーザーログイン/.match(@d.page_source)}
 
   if /ユーザーログイン/.match(@d.page_source)
@@ -292,7 +308,6 @@ def login_user2
   # 最初にログアウトしておく
   @d.find_element(:link_text, "ログアウト").click
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
-
   # 新規登録
   @d.find_element(:link_text, "新規登録").click
   @wait.until {/ユーザー新規登録/.match(@d.page_source)}
@@ -533,6 +548,7 @@ def edit_prototype
   end
 
   @d.find_element(:class, "form__btn").click
+  @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
   # 【5-005】正しく編集できた場合は、詳細画面へ遷移すること
   display_flag = @d.find_element(:class, "prototype__wrapper").displayed? rescue false
   if display_flag

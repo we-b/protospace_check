@@ -147,6 +147,8 @@ def check_1_008
   @wait.until {@d.find_element(:id, 'user_profile').displayed?}
   @d.find_element(:id, 'user_profile').clear
   @d.find_element(:class, "form__btn").click
+  @d.get(@url)
+  @d.find_element(:link_text, "新規登録").click
   @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if /ユーザー新規登録/.match(@d.page_source)
@@ -232,7 +234,7 @@ def check_2_login
   @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
   show_prototype_img = @d.find_element(:class, "prototype__image").find_element(:tag_name, "img").attribute("src") rescue "Error: [ログイン状態]class: prototype__image(画像)が見つかりません\n"
   show_prototype_title = @d.find_element(:class, "prototype__hedding").text rescue "Error: [ログイン状態]class: prototype__hedding(Prototype名)が見つかりません\n"
-  show_prototype_details = @d.find_elements(:class, "detail__message") rescue "Error: [ログイン状態]class: detail__message(Prototypeのキャッチコピーまたはコンセプト)が見つかりません\n"
+  show_prototype_details = @d.find_elements(:class, "prototype__body") rescue "Error: [ログイン状態]class: detail__message(Prototypeのキャッチコピーまたはコンセプト)が見つかりません\n"
   show_prototype_user_name = @d.find_element(:class, "prototype__user").text.delete("by ") rescue "Error: [ログイン状態]class: prototype__user(Prototypeの投稿者名)が見つかりません\n"
 
   # Prototype詳細画面の表示内容をチェック
@@ -285,7 +287,7 @@ def check_2_logout
     @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false}
     show_prototype_img = @d.find_element(:class, "prototype__image").find_element(:tag_name, "img").attribute("src") rescue "Error: [ログアウト状態]class: prototype__image(画像)が見つかりません\n"
     show_prototype_title = @d.find_element(:class, "prototype__hedding").text rescue "Error: [ログアウト状態]class: prototype__hedding(Prototype名)が見つかりません\n"
-    show_prototype_details = @d.find_elements(:class, "detail__message") rescue "Error: [ログアウト状態]class: detail__message(Prototypeのキャッチコピーまたはコンセプト)が見つかりません\n"
+    show_prototype_details = @d.find_elements(:class, "prototype__body") rescue "Error: [ログアウト状態]class: detail__message(Prototypeのキャッチコピーまたはコンセプト)が見つかりません\n"
     show_prototype_user_name = @d.find_element(:class, "prototype__user").text.delete("by ") rescue "Error: [ログアウト状態]class: prototype__user(Prototypeの投稿者名)が見つかりません\n"
 
     # Prototype詳細画面の表示内容をチェック
