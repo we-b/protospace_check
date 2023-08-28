@@ -91,8 +91,7 @@ def sign_up_check
 
   #全項目未入力で「登録する」ボタンをクリック
   @d.find_element(:class, "form__btn").click
-  @d.get(@url)
-  @d.find_element(:link_text, "新規登録").click
+  sleep 3
   @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
 
   #念の為登録できてしまわないかチェック
@@ -115,30 +114,21 @@ def sign_up_check
 
     #再度新規登録画面へ
     @d.find_element(:link_text, "新規登録").click
+    sleep 3
     @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
   end
 
   # 【1-003】メールアドレスは@を含む必要があること
-  @d.get(@url)
-  @d.find_element(:link_text, "新規登録").click
   check_1_003
 
   # 【1-005】パスワードは6文字以上であること
-  @d.get(@url)
-  @d.find_element(:link_text, "新規登録").click
   check_1_005
 
   # 【1-006】パスワードは確認用を含めて2回入力する
-  @d.get(@url)
-  @d.find_element(:link_text, "新規登録").click
   check_1_006
   # 【1-018】ユーザーの新規登録には、パスワードとパスワード確認用の値の一致が必須であること
-  @d.get(@url)
-  @d.find_element(:link_text, "新規登録").click
   check_1_018
   # 【1-008】プロフィールが必須であること
-  @d.get(@url)
-  @d.find_element(:link_text, "新規登録").click
   check_1_008
 end
 
@@ -256,6 +246,7 @@ def login_user
     @puts_num_array[1][12] = "[1-012] ◯：フォームに適切な値が入力されていない状態では、新規登録/ログインはできず、そのページに留まること。"
   end
 
+  sleep 5
   @wait.until {@d.find_element(:id, 'user_email').displayed?}
   @d.find_element(:id, 'user_email').send_keys(@user_email)
   @wait.until {@d.find_element(:id, 'user_password').displayed?}
@@ -307,6 +298,7 @@ end
 def login_user2
   # 最初にログアウトしておく
   @d.find_element(:link_text, "ログアウト").click
+  sleep 5
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
   # 新規登録
   @d.find_element(:link_text, "新規登録").click
@@ -315,6 +307,7 @@ def login_user2
   # 【1-002】メールアドレスは一意性であること
   input_sign_up(@user_email, @password, @user_name2, @user_profile2, @user_occupation2, @user_position2)
   @d.find_element(:class,"form__btn").click
+  sleep 5
   @wait.until {/ユーザー新規登録/.match(@d.page_source)}
 
   if /ユーザー新規登録/.match(@d.page_source)
@@ -765,6 +758,7 @@ end
 def logout_check
   # 最初にログアウトする。
   @d.find_element(:link_text, "ログアウト").click
+  sleep 10
   @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   # 【1-016】ログアウト状態では、ヘッダーに「新規登録」「ログイン」のリンクが存在すること

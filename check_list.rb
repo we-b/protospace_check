@@ -36,6 +36,7 @@ def check_1_005
 
   input_sign_up(@user_email, @check_password, @user_name, @user_profile, @user_occupation, @user_position)
   @d.find_element(:class,"form__btn").click
+  sleep 5
   @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if /ユーザー新規登録/.match(@d.page_source)
@@ -53,7 +54,6 @@ def check_1_005
     @d.find_element(:link_text, "新規登録").click
     @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
   end
-
   # 新規登録フォームの入力項目をクリア
   clear_sign_up
 end
@@ -76,6 +76,7 @@ def check_1_006
   @d.find_element(:id, 'user_position').send_keys(@user_position)
 
   @d.find_element(:class,"form__btn").click
+  sleep 5
   @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   if /ユーザー新規登録/.match(@d.page_source)
@@ -117,24 +118,40 @@ def check_1_018
   @d.find_element(:id, 'user_position').send_keys(@user_position)
 
   @d.find_element(:class,"form__btn").click
-  @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
-  if /ユーザー新規登録/.match(@d.page_source)
-    @puts_num_array[1][18] = "[1-018] ◯：ユーザーの新規登録には、パスワードとパスワード確認用の値の一致が必須であること"
-  else
+  # 2023/8/26削除 バックアップとして
+  # @wait.until { @d.execute_script('return document.readyState') == 'complete' }
+  # @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
+
+  # if /ユーザー新規登録/.match(@d.page_source)
+  #   @puts_num_array[1][18] = "[1-018] ◯：ユーザーの新規登録には、パスワードとパスワード確認用の値の一致が必須であること"
+  # else
+  #   @puts_num_array[1][18] = "[1-018] ×：ユーザーの新規登録には、パスワードとパスワード確認用の値が不一致でも新規登録できてしまう。"
+
+  #   # 登録できてしまった場合、ログアウトしておく
+  #   display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+  #   if display_flag
+  #     @d.find_element(:link_text, "ログアウト").click
+  #     @d.get(@url)
+  #   end
+
+  #   @d.find_element(:link_text, "新規登録").click
+  #   @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+  # end
+
+  begin
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed?}
     @puts_num_array[1][18] = "[1-018] ×：ユーザーの新規登録には、パスワードとパスワード確認用の値が不一致でも新規登録できてしまう。"
-
-    # 登録できてしまった場合、ログアウトしておく
-    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+    @d.find_element(:link_text, "ログアウト").displayed? rescue false
     if display_flag
       @d.find_element(:link_text, "ログアウト").click
       @d.get(@url)
     end
-
     @d.find_element(:link_text, "新規登録").click
     @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+  rescue Selenium::WebDriver::Error::TimeoutError
+    @puts_num_array[1][18] = "[1-018] ◯：ユーザーの新規登録には、パスワードとパスワード確認用の値の一致が必須であること"
   end
-
   # 新規登録フォームの入力項目をクリア
   clear_sign_up
 end
@@ -147,24 +164,37 @@ def check_1_008
   @wait.until {@d.find_element(:id, 'user_profile').displayed?}
   @d.find_element(:id, 'user_profile').clear
   @d.find_element(:class, "form__btn").click
-  @d.get(@url)
-  @d.find_element(:link_text, "新規登録").click
-  @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
+  # @wait.until { @d.execute_script('return document.readyState') == 'complete' }
+  # @wait.until {/ユーザー新規登録/.match(@d.page_source) || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
-  if /ユーザー新規登録/.match(@d.page_source)
-    @puts_num_array[1][8] = "[1-008] ◯：プロフィールが必須であること。"
-  else
+  # if /ユーザー新規登録/.match(@d.page_source)
+  #   @puts_num_array[1][8] = "[1-008] ◯：プロフィールが必須であること。"
+  # else
+  #   @puts_num_array[1][8] = "[1-008] ×：プロフィール未入力でも登録できてしまう。"
+
+  #   # 登録できてしまった場合、ログアウトしておく
+  #   display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+  #   if display_flag
+  #     @d.find_element(:link_text, "ログアウト").click
+  #     @d.get(@url)
+  #   end
+
+  #   @d.find_element(:link_text, "新規登録").click
+  #   @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+  # end
+
+  begin
+    @wait.until {@d.find_element(:class, "card__wrapper").displayed?}
     @puts_num_array[1][8] = "[1-008] ×：プロフィール未入力でも登録できてしまう。"
-
-    # 登録できてしまった場合、ログアウトしておく
-    display_flag = @d.find_element(:link_text, "ログアウト").displayed? rescue false
+    @d.find_element(:link_text, "ログアウト").displayed? rescue false
     if display_flag
       @d.find_element(:link_text, "ログアウト").click
       @d.get(@url)
     end
-
     @d.find_element(:link_text, "新規登録").click
     @wait.until {/ユーザー新規登録/.match(@d.page_source) rescue false}
+  rescue Selenium::WebDriver::Error::TimeoutError
+    @puts_num_array[1][8] = "[1-008] ◯：プロフィールが必須であること。"
   end
 
   # 新規登録フォームの入力項目をクリア
