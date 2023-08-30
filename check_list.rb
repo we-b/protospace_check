@@ -298,7 +298,7 @@ def check_2_login
   else
     prototype_detail_answers = { "キャッチコピー" => @prototype_catch_copy, "コンセプト" => @prototype_concept }
     prototype_details_text = show_prototype_details.map { |e| e.text }
-
+    
     prototype_detail_answers.each{|k, v|
       if prototype_details_text.include?(v)
         @check_2_detail["チェック詳細"] << "◯：[ログイン状態]Prototype詳細画面にPrototypeの「#{k}」が表示されている。\n"

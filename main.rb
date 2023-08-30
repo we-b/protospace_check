@@ -678,7 +678,9 @@ def comment_prototype
   end
 
   @d.find_element(:id, "comment_text").send_keys(@comment) rescue false || @d.find_element(:id, "comment_content").send_keys(@comment) rescue false
+  sleep 3
   @d.find_element(:class, "form__btn").click
+  sleep 3
   @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   # 【7-002】正しくフォームを入力すると、コメントが投稿できること
