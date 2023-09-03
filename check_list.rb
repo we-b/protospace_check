@@ -298,15 +298,14 @@ def check_2_login
   else
     prototype_detail_answers = { "キャッチコピー" => @prototype_catch_copy, "コンセプト" => @prototype_concept }
     prototype_details_text = show_prototype_details.map { |e| e.text }
-    
-    prototype_detail_answers.each{|k, v|
-      if prototype_details_text.include?(v)
+    prototype_detail_answers.each do |k, v|
+      if prototype_details_text[0].split("\n").map(&:strip).any? {|text| text == v}
         @check_2_detail["チェック詳細"] << "◯：[ログイン状態]Prototype詳細画面にPrototypeの「#{k}」が表示されている。\n"
         @flag_check_2 += 1
       else
         @check_2_detail["チェック詳細"] << "×：[ログイン状態]Prototype詳細画面にPrototypeの「#{k}」情報が表示されていない。\n"
       end
-    }
+    end
   end
 end
 
@@ -352,14 +351,14 @@ def check_2_logout
       prototype_detail_answers = { "キャッチコピー" => @prototype_catch_copy, "コンセプト" => @prototype_concept }
       prototype_details_text = show_prototype_details.map { |e| e.text }
 
-      prototype_detail_answers.each{|k, v|
-        if prototype_details_text.include?(v)
-          @check_2_detail["チェック詳細"] << "◯：[ログアウト状態]Prototype詳細画面にPrototypeの「#{k}」が表示されている。\n"
+      prototype_detail_answers.each do |k, v|
+        if prototype_details_text[0].split("\n").map(&:strip).any? {|text| text == v}
+          @check_2_detail["チェック詳細"] << "◯：[ログイン状態]Prototype詳細画面にPrototypeの「#{k}」が表示されている。\n"
           @flag_check_2 += 1
         else
-          @check_2_detail["チェック詳細"] << "×：[ログアウト状態]Prototype詳細画面にPrototypeの「#{k}」情報が表示されていない。\n"
+          @check_2_detail["チェック詳細"] << "×：[ログイン状態]Prototype詳細画面にPrototypeの「#{k}」情報が表示されていない。\n"
         end
-      }
+      end
     end
 
     @check_2_detail["チェック合否"] = @flag_check_2 == 10 ? "◯" : "×"
