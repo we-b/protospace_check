@@ -665,6 +665,7 @@ def comment_prototype
 
   # 【7-004】フォームを空のまま投稿しようとすると、投稿できずにその画面に留まること
   @d.find_element(:class, "form__btn").click
+  sleep 5
   @wait.until {@d.find_element(:class, "prototype__comments").displayed? rescue false}
 
   display_flag = @d.find_element(:class, "prototype__comments").displayed? rescue false
