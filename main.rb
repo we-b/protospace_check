@@ -677,10 +677,14 @@ def comment_prototype
     prototype_title_click_from_top(@prototype_title)
   end
 
+  @d.get(@url)
+  @wait.until {@d.find_element(:class, "card__wrapper").displayed? rescue false}
+  prototype_title_click_from_top(@prototype_title)
+  @wait.until {@d.find_element(:class, "prototype__comments").displayed? rescue false}
   @d.find_element(:id, "comment_text").send_keys(@comment) rescue false || @d.find_element(:id, "comment_content").send_keys(@comment) rescue false
-  sleep 3
+  sleep 5
   @d.find_element(:class, "form__btn").click
-  sleep 3
+  sleep 5
   @wait.until {@d.find_element(:class, "prototype__wrapper").displayed? rescue false || @d.find_element(:class, "card__wrapper").displayed? rescue false}
 
   # 【7-002】正しくフォームを入力すると、コメントが投稿できること
